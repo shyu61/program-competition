@@ -47,10 +47,13 @@ void dfs_stack(int v) {
     }
 }
 
+const int NMAX = 1e5;
+int dist[NMAX];
 void bfs(int v) {
     queue<int> que;
     que.push(v); seen[v] = true;
 
+    dist[v] = 0;
     while (!que.empty()) {
         int v = que.front(); que.pop();
 
@@ -58,6 +61,7 @@ void bfs(int v) {
             if (seen[adj]) continue;
             que.push(adj);
             seen[adj] = true;
+            dist[adj] = dist[v] + 1;
         }
     }
 }
