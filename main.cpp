@@ -18,7 +18,6 @@ int main() {
     ll ans = 0;
     for (int i = 1; i <= AMAX; i++) {
         if (c[i] == 0) continue;
-        cout << c[i] << endl;
         for (int k = 1; k * i <= AMAX; k++) {
             // floor関数の答えがkになる要素数つまり、`k*Ai <= Aj < (k+1)*Ai` を満たすAjの個数をカウント
             // (k+1)*Aiは常に定義閾内とは限らないので終端とminをとる
