@@ -1,25 +1,37 @@
 // ナップサック問題: p52
-// 漸化式的解法: 添字1つバージョン
+// メモ化再帰
 #include <bits/stdc++.h>
 using namespace std;
 
-// 1つ目の添字は直前の項にしか依存しないので、oldで直前の状態を持つことで添字を省略できる
+int n, W;
+vector<int> v, w;
+vector<vector<int>> memo;
 
-int main() {
-    int n, W; cin >> n >> W;
-    vector<int> w(n + 1), v(n + 1);
-    for (int i = 1; i <= n; i++) cin >> v[i] >> w[i];
+int rec(int i, int wc) {
+    // メモ化テーブルがどっちから埋まっていくかを意識する
+    // i==nから埋まっていくのでreturn 0
+    if (i == n) return 0;
+    if (memo[i][wc] != -1) return memo[i][wc];
 
-    vector<int> dp(W + 1);
-    dp[0] = 0;
-    for (int i = 1; i <= n; i++) {
-        vector<int> old(W + 1);
-        swap(old, dp);
-        for (int j = 0; j <= W; j++) {
-            if (j - w[i] >= 0) dp[j] = max(old[j - w[i]] + v[i], old[j]);
-            else dp[j] = old[j];
-        }
+    int maxv = -1;
+    if (wc + w[i] > W) {
+        maxv = max(maxv, rec(i + 1, wc));
+    } else {
+        maxv = max(
+            rec(i + 1, wc + w[i]) + v[i],
+            rec(i + 1, wc)
+        );
     }
 
-    cout << dp[W] << endl;
+    return memo[i][wc] = maxv;
+}
+
+int main() {
+    cin >> n >> W;
+    v = w = vector<int>(n);
+    memo = vector<vector<int>>(n + 1, vector<int>(W + 1, -1));
+    for (int i = 0; i < n; i++) cin >> v[i] >> w[i];
+
+    int maxv = rec(0, 0);
+    cout << maxv << endl;
 }
