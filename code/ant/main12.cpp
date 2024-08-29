@@ -31,6 +31,7 @@ int main() {
     // 始点に戻ってくる一つ前の点からスタート
     for (int S = (1 << V) - 2; S >= 0; S--) {
         for (int v = 0; v < V; v++) {
+            // vは訪問済みのはず
             if (S >> v & 0) continue;
             for (auto adj : a[v]) {
                 int u = adj.to;
