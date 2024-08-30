@@ -9,6 +9,7 @@ void dijkstra(int v) {
     vector<int> dist(n);
 
     pq.emplace(v, 0);
+    dist[v] = 0;
     while (!pq.empty()) {
         auto [u, w] = pq.top(); pq.pop();
         if (w > dist[u]) continue;
