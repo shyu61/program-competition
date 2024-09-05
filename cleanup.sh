@@ -5,4 +5,4 @@ filename=$((n+1))
 
 mv main.cpp ./code/problems/main${filename}.cpp
 cp base.cpp main.cpp
-rm main
+rm -f main
