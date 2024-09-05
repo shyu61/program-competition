@@ -75,6 +75,9 @@
         "type_traits": "cpp",
         "utility": "cpp",
         "format": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "forward_list": "cpp",
+        "regex": "cpp",
+        "valarray": "cpp"
     }
 }
