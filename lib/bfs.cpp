@@ -16,8 +16,7 @@ void bfs(int v) {
         for (auto adj : G[u]) {
             if (dist[adj] != -1) continue;
             que.push(adj);
-            dist[adj] = dist[v] + 1;
+            dist[adj] = dist[u] + 1;
         }
     }
-
 }
