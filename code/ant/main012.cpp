@@ -26,6 +26,8 @@ int main() {
         a[s].emplace_back(t, d);
     }
 
+    // dp[未訪問の頂点集合][現在いる頂点] = そこまでのpathの最小値
+    // 未訪問の頂点集合は、1:未訪問, 0:訪問済み
     dp = vector<vector<int>>(1 << V, vector<int>(V, INF));
     dp[(1 << V) - 1][0] = 0;
     // 始点に戻ってくる一つ前の点からスタート

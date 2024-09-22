@@ -33,3 +33,22 @@ int main() {
     }
     cout << solve() << endl;
 }
+
+// 別解
+// int main() {
+//     int n, W; cin >> n >> W;
+//     vector<int> v(n + 1), w(n + 1);
+//     v[0] = w[0] = 0;
+//     for (int i = 1; i <= n; i++) cin >> v[i] >> w[i];
+
+//     vector<int> dp(W + 1), old(W + 1);
+//     for (int i = 1; i <= n; i++) {
+//         for (int j = 0; j <= W; j++) {
+//             if (j - w[i] < 0) dp[j] = old[j];
+//             else dp[j] = max(old[j], old[j - w[i]] + v[i]);
+//         }
+//         old = dp;
+//     }
+
+//     cout << dp[W] << endl;
+// }
