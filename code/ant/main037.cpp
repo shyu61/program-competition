@@ -1,4 +1,4 @@
-// 硬貨の問題
+// 硬貨の問題: p42
 #include <bits/stdc++.h>
 using namespace std;
 
