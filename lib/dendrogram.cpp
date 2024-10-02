@@ -28,6 +28,7 @@ void f1(vector<int> cur, vector<bool> seen, int d) {
 
 // nPr
 void f2(vector<int> cur, vector<bool> seen, int d) {
+    // n!との違いはここだけ
     if (d == r) {
         for (auto v : cur) cout << v << " ";
         cout << endl;
