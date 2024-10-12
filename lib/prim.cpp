@@ -15,18 +15,17 @@ int prim(int s) {
     int total = 0;
 
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-    d = vector<int>(n, INF); d[s] = 0;
+    vector<bool> mst(n);
     pq.emplace(0, s);
 
     while (!pq.empty()) {
         auto [cost, v] = pq.top(); pq.pop();
-        if (cost > d[v]) continue;
+        if (mst[v]) continue;
 
         total += cost;
 
         for (auto adj : G[v]) {
-            if (d[adj.to] > adj.cost) {
-                d[adj.to] = adj.cost;
+            if (!mst[adj.to]) {
                 pq.emplace(d[adj.to], adj.to);
             }
         }
