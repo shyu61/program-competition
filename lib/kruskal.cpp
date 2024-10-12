@@ -1,5 +1,8 @@
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
+
+// 重みが小さいものから順に全てのedgeを見ていき、閉路を形成しない限りmstに加えていく
+// 閉路を形成しないためにはfrom,toが同じ連結成分でないことが条件(!uf.same(from, to))
 
 struct UnionFind {
     // 親のインデックスを保持する
@@ -32,3 +35,32 @@ struct UnionFind {
         return -par[root(x)];
     }
 };
+
+struct Edge {
+    int from, to, cost;
+    Edge(int from, int to, int cost): from(from), to(to), cost(cost) {};
+
+    bool operator<(const Edge& other) const {
+        return cost < other.cost;
+    };
+};
+
+const int INF = 1e9 + 1;
+int n;
+vector<Edge> E;
+vector<int> d;
+
+int kruskal() {
+    int total = 0;
+
+    // O(ElogE)
+    sort(E.begin(), E.end());
+    UnionFind uf(n);
+
+    for (auto e : E) {
+        if (uf.same(e.from, e.to)) continue;
+        uf.unite(e.from, e.to);
+        total += e.cost;
+    }
+    return total;
+}
