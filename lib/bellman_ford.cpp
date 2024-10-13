@@ -11,13 +11,14 @@ int n;
 vector<vector<Edge>> G;
 vector<int> d;
 
-void bellmanFord() {
+void bellmanFord(int s) {
     d = vector<int>(n, INF);
+    d[s] = 0;
     while (1) {
         bool update = false;
         for (int i = 0; i < n; i++) {
             for (auto adj : G[i]) {
-                if (d[adj.to] != INF && d[adj.to] > d[i] + adj.cost) {
+                if (d[i] != INF && d[adj.to] > d[i] + adj.cost) {
                     d[adj.to] = d[i] + adj.cost;
                     update = true;
                 }
