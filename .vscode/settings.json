@@ -78,6 +78,7 @@
         "numbers": "cpp",
         "forward_list": "cpp",
         "regex": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "modint": "cpp"
     }
 }
