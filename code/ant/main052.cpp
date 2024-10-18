@@ -1,42 +1,76 @@
-// プライオリティキューとヒープ(Expedition): p73
+// 二分探索木: p77
 #include <bits/stdc++.h>
 using namespace std;
 
-// 逐次問題 -> DP,グラフ,全探索,貪欲法,stack
-// 1度にできる限り多く給油し、ギリギリまで給油を先延ばしにするのが直感的には良さそうで貪欲法的な考えは筋が良さそう。
-// しかし実装は難しい。頭に置きつつ別の方法も考えると、遷移は1次元なのでstackのようにGSを通過する度に順番に保存しておいて燃料が0になったら取り出すという考えが思いつく。
-// これは暗に遅延評価をしている。つまり、逐次問題の中でも今回のような資源問題では"遅延評価"(ある資源を獲得した時、それを使うかどうかは後で判断する)を使うことでうまく解けるケースがあると言える
+// ポインタを使う場合の注意点
+// 関数内で宣言したポインタ変数のスコープは関数内だけ。グローバルに保持したい場合はヒープメモリを使う必要がある
+// 自動解放されないので忘れずに
 
-int main() {
-    int n, L, P; cin >> n >> L >> P;
-    queue<pair<int, int>> que;
-    for (int i = 0; i < n; i++) {
-        int a, b; cin >> a >> b;
-        que.emplace(a, b);
+// BSTの削除はいくつか考え方があるが一番明快なのは以下
+// 1.対象がleftの場合 -> 削除するだけ
+// 2.対象の子が1つの場合 -> その子をスライドする
+// 3.対象の子が2つの場合 -> 左部分木の最大値を持ってくる(右部分木の最小値でもok)
+
+const node *root = nullptr;
+
+struct node {
+    int val;
+    node *lch, *rch;
+};
+
+// もちろんループでもかけるが、木構造の構築は再帰関数と相性がいい
+// 再帰関数は戻り値をうまく使う
+node *insert(node *p, int v) {
+    if (p == nullptr) {
+        node *q = new node{v};
+        return q;
     }
 
-    priority_queue<int> pq;
-    int now = 0, fuel = P, ans = 0;
-    while (1) {
-        now += fuel;
-        if (now >= L) break;
+    if (v < p->val) p->lch = insert(p->lch, v);
+    else p->rch = insert(p->rch, v);
 
-        // 通過したGSを追加
-        // そのGSで給油するかどうかは遅延評価する
-        while (!que.empty()) {
-            auto [a, b] = que.front();
-            if (a > now) break;
-            pq.push(b);
-            que.pop();
-        }
+    return p;
+}
 
-        // 給油
-        if (pq.empty()) {
-            cout << -1 << endl;
-            return 0;
+bool find(node *p, int v) {
+    if (p == nullptr) return false;
+    if (v == p->val) return true;
+    if (v < p->val) return find(p->lch, v);
+    return find(p->rch, v);
+}
+
+// ノードの削除はポインタの貼り替え漏れに注意する
+// 移動元での貼り替えと移動先での貼り替えをそれぞれ考えると良い
+node* remove(node *p, int v) {
+    // まずremoveするノードを探索する
+    if (p == nullptr) return nullptr;
+    if (v == p->val) {
+        // 左部分木がない場合は右部分木をスライドさせる
+        if (p->lch == nullptr) {
+            node *q = p->rch;
+            delete p;
+            return q;
         }
-        fuel = pq.top(); pq.pop();
-        ans++;
-    }
-    cout << ans << endl;
+        // 左部分木が右部分木を持たない場合は直下の左の子が最大値になるので、左部分木をスライドさせる
+        if (p->lch->rch == nullptr) {
+            node *q = p->lch;
+            q->rch = p->rch;
+            delete p;
+            return q;
+        }
+        // それ以外の場合は、左部分木の内、最大のleftを採用
+        node *q;
+        for (q = p->lch; q->rch->rch != nullptr; q->rch);
+        node *r = q->rch;
+        // rをpの位置に移動させる、そのためにrから生える枝をqに付け替える
+        // 移動元での貼り替え
+        q->rch = r->lch;
+        // 移動先での貼り替え
+        r->lch = p->lch;
+        r->rch = p->rch;
+        delete p;
+        return r;
+    } else if (v < p->val) p->lch = remove(p->lch, v);
+    else p->rch = remove(p->rch, v);
+    return p;
 }

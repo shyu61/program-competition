@@ -1,60 +1,25 @@
-// 応用問題(Layout): p104
+// ユークリッド互除法(線分上の格子点の個数): p107
 #include <bits/stdc++.h>
 using namespace std;
 
-// いわゆる牛ゲーと呼ばれる問題。"""重みが固定値ではなく不等式制約下での、2点の最大値を求める問題は、最短経路問題に帰着できる"""というもの。
-// 直感的に理解するのは非常に難しいので、有名問題として押さえておく。
-// ポイントは、最短経路問題は本質的には不等式制約下の最大値問題であるということ。du <= dv + eとしたとき、v->uへの最短経路はvがuの最短経路上に存在するときであり、
-// この時等式が成立する。これはdu - dv <= eの最大値を求めていることに他ならない。
-// これが牛ゲーにも当てはまる。このdu - dv <= eの形に不等式制約を変形し、v->uへeのedgeを張ったグラフにおける最短経路問題を解けば良いことになる。
-// 通常の最大経路問題は、重みに-1をかけてベルマンフォードを使うことで解ける。
+// 線分上の格子点の個数をgcdで計算できるのは有名問題なので覚えておく
+// y/xが既約分数(x,yが互いに素)な時は端点以外に格子点はない。逆に言えば格子点はy/xの分母分子に対して同じ整数値で割ることができるときに存在する。
+// その理由は傾きの比率を維持しつつ分母分子を整数値で小さくすることができたらそこが格子点になるから。
+// よって互いに素にしたときに、その前に付く係数=gcd(x,y)-1が線分上の格子点の個数になる。
 
-// すごいところは線形計画問題が、よりシンプルに最短経路問題として求解できる点。単体法などよりも遥かに効率的。
+// ポイントは、y/xの分母分子を同じ整数で割るということを実現する上で、gcdが使えるということ。
+// gcdは最大公約数であり、約数は倍数と対になる概念で、かつ割り切れる数という側面もある。同じ整数で割りたい -> 公約数を探したい -> gcdを使うという発想になる。
 
-// TODO: 直感的な意味を見出す
-
-struct Edge {
-    int from, to, cost;
-    Edge (int from, int to, int cost) : from(from), to(to), cost(cost) {};
-};
-
-const int INF = 1e9 + 1;
-int n;
-vector<Edge> es;
-
-int bellmanFord() {
-    vector<int> dist(n, INF);
-    dist[0] = 0;
-    int cnt = 0;
-    for (int i = 0; ; i++) {
-        bool update = false;
-        for (auto e : es) {
-            if (dist[e.to] > dist[e.from] + e.cost) {
-                dist[e.to] = dist[e.from] + e.cost;
-                update = true;;
-            }
-        }
-        if (!update) break;
-        if (i == n - 1) {
-            // 負の閉路検出
-            return -1;
-        }
-    }
-    if (dist[n - 1] == INF) return -2;
-    return dist[n - 1];
+int gcd(int a, int b) {
+    if (b == 0) return a;
+    return gcd(b, a % b);
 }
 
 int main() {
-    int ml, md; cin >> n >> ml >> md;
-    for (int i = 0; i < n; i++) es.emplace_back(i, i - 1, 0);
-    for (int i = 0; i < ml; i++) {
-        int al, bl, dl; cin >> al >> bl >> dl;
-        es.emplace_back(--al, --bl, dl);
-    }
-    for (int i = 0; i < md; i++) {
-        int al, bl, dl; cin >> al >> bl >> dl;
-        es.emplace_back(--bl, --al, -dl);
-    }
+    int x1, y1, x2, y2; cin >> x1 >> y1 >> x2 >> y2;
+    int x = abs(x2 - x1);
+    int y = abs(y2 - y1);
 
-    cout << bellmanFord() << endl;
+    if (x == 0 && y == 0) cout << 0 << endl;
+    else cout << gcd(x, y) - 1 << endl;
 }

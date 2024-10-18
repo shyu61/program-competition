@@ -1,57 +1,23 @@
-// 素数に関する基本的なアルゴリズム(素数判定): p110
+// 素数に関する基本的なアルゴリズム(素数の個数): p111
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
-// 素数判定: O(√n)
-bool is_prime(int n) {
-    for (int i = 2; i * i <= n; i++) {
-        if (n % i == 0) return false;
-    }
-    return true;
-}
-
-// 約数の列挙: O(√n)
-vector<int> divisor(int n) {
-    vector<int> res;
-    for (int i = 2; i * i <= n; i++) {
-        if (n % i == 0) {
-            res.push_back(i);
-            // i * i == nの時はiとn/1が一致するので入れない
-            if (i != n / i) res.push_back(n / i);
-        }
-    }
-    return res;
-}
-
-// 素因数分解: O(√n)
-map<int, int> prime_factor(int n) {
-    map<int, int> res;
-    for (int i = 2; i * i <= n; i++) {
-        while (n % i == 0) {
-            res[i]++;
-            n /= i;
-        }
-    }
-    // √nより大きい方の素因数があるということ
-    if (n != 1) res[n] = 1;
-    return res;
-}
+// 通常の素数判定はO(√n)で十分な速度だが、素数判定したい整数がk個数あればO(k√n)コストがかかる
+// その場合はエラトステネスの篩を使うと個数kに依存せずO(nlog(log(n)))で判定できる
+// 篩を作るのに約O(n)のコストがかかるが、この篩を作ってしまえばはn以下の整数であればO(1)で素数判定ができる
 
 int main() {
     int n; cin >> n;
 
-    // 素数判定
-    cout << is_prime(n) << endl;
-
-    // 約数の列挙
-    vector<int> divisors = divisor(n);
-    for (auto v : divisors) cout << v << " ";
-    cout << endl;
-
-    // 素因数分解
-    map<int, int> factors = prime_factor(n);
-    for (auto [k, v] : factors) {
-        cout << k << ": " << v << ", ";
+    vector<bool> a(n);
+    int cnt = 0;
+    // O(nlog(log(n)))
+    for (int i = 2; i <= n; i++) {
+        if (a[i]) continue;
+        cnt++;
+        for (int j = 1; i * j <= n; j++) a[i * j] = true;
     }
-    cout << endl;
+
+    cout << cnt << endl;
 }

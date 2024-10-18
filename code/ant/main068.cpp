@@ -1,38 +1,23 @@
-// 素数に関する基本的なアルゴリズム(区間内の素数の個数): p113
+// Minimum Scalar Product: p117
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
 
-// 素数判定: O(√n)
-// 素数の個数: その範囲内の個数分素数判定を行うこととイコールなので、プレーンにやるならO(n√n)
-// 　　　　　  エラトステネスの篩を使うならO(nlog(log(n)))
-
-// 素数の個数なのでなんとかしてエラトステネスの篩を作りたい。[2,b)の篩は作れないので、どうするか
-// -> 素数判定方法で他に知っているものを探す。xが素数じゃないなら√x以下に素因数を持つことを使えないか考える
-// -> √b以下で篩を作ることを考える。そもそもの目的は[a,b)の区間篩を作ることであり、エラトステネスの篩は素因数の定数倍を除外するという方法をとっている。
-// -> 区間篩を作りたいという目的と、エラトステネスの篩が素因数の定数倍を消去することを利用していることを考えれば、[2,√b)の篩で[a,b)の篩を作ることができることに気付く。
-// ポイントは、目的を明確にすることと、知っているアルゴリズムの組み合わせを考えること、アルゴリズムの本質に立ち返って考えること。
+// 組み合わせ最適化問題なので、全探索/貪欲法/DP/グラフなどを考える
+// smallは全探索でいけるがlargeは難しそうで、メモ化も難しい
+// 貪欲でいけないかをまず考えてみる。明らかに小さい数と大きい数を掛け合わせれば良いことに気付くのでsortすれば良いことに気づける
+// サンプルを試してみても良い。
 
 int main() {
-    ll a, b; cin >> a >> b;
+    int n; cin >> n;
+    vector<int> v1(n), v2(n);
+    for (int i = 0; i < n; i++) cin >> v1[i];
+    for (int i = 0; i < n; i++) cin >> v2[i];
 
-    int small_max = int(sqrt(b));
+    sort(v1.begin(), v1.end());
+    sort(v2.rbegin(), v2.rend());
 
-    vector<bool> small(small_max + 1, true);
-    vector<bool> big(b - a, true);
-
-    for (int i = 2; i <= small_max; i++) {
-        if (!small[i]) continue;
-        for (int j = 1; j * i <= small_max; j++) small[j * i] = false;
-
-        ll j = a / i;
-        if (a % i != 0) j++;
-        for (; j * i < b; j++) big[j * i - a] = false;
-    }
-
-    int cnt = 0;
-    for (int i = 0; i < b - a; i++) {
-        if (big[i]) cnt++;
-    }
-    cout << cnt << endl;
+    ll ans = 0;
+    for (int i = 0; i < n; i++) ans += ll(v1[i]) * v2[i];
+    cout << ans << endl;
 }

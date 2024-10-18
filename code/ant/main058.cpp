@@ -1,40 +1,51 @@
-// 最短路問題(ワーシャルフロイド法): p98
+// 最短路問題(経路復元): p98
 #include <bits/stdc++.h>
 using namespace std;
-
-// APSPを求める方法。計算量はO(V^3)、負の重みがあってもOK
-// いわゆるナップサックDP。i->jへ移動するのに0-kのノードを考慮するとすると、
-// dp[k][i][j] = min(dp[k-1][i][j], dp[k-1][i][k] + dp[k-1][k][j])となる
-// これは2項間DPなので添字の省略が可能
 
 struct Edge {
     int to, cost;
     Edge(int to, int cost): to(to), cost(cost) {};
 };
 
-const int INF = 1e9 + 1;
-int n, m, s;
+const int INF = 1e5;
+int n;
 vector<vector<Edge>> G;
-vector<vector<int>> d;
+vector<int> pre;
 
-void warshallFloyd() {
-    for (int k = 0; k < n; k++) {
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+void dijkstra(int s) {
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+    vector<int> d(n, INF);
+    pq.emplace(s, 0);
+
+    while (!pq.empty()) {
+        auto [v, dist] = pq.top(); pq.pop();
+        if (dist > d[v]) continue;
+        for (auto adj : G[v]) {
+            if (d[adj.to] > d[v] + adj.cost) {
+                d[adj.to] = d[v] + adj.cost;
+                pq.emplace(adj.to, d[adj.to]);
+                pre[adj.to] = v;
             }
         }
     }
 }
 
 int main() {
-    cin >> n >> m >> s;
+    int s, t; cin >> n >> s >> t;
     G = vector<vector<Edge>>(n);
-    for (int i = 0; i < m; i++) {
+    for (int i = 0; i < n; i++) {
         int u, v, cost; cin >> u >> v >> cost;
         G[u].emplace_back(v, cost);
     }
 
-    d = vector<vector<int>>(n, vector<int>(n));
-    warshallFloyd();
+    pre = vector<int>(n);
+    dijkstra(s);
+
+    // s->tへの最短経路の復元
+    vector<int> path;
+    for (; t != -1; t = pre[t]) path.push_back(t);
+    sort(path.rbegin(), path.rend());
+
+    for (auto x : path) cout << x << " ";
+    cout << endl;
 }

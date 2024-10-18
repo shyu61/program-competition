@@ -1,25 +1,52 @@
-// ユークリッド互除法(線分上の格子点の個数): p107
+// ユークリッド互除法(双六): p108
 #include <bits/stdc++.h>
 using namespace std;
 
-// 線分上の格子点の個数をgcdで計算できるのは有名問題なので覚えておく
-// y/xが既約分数(x,yが互いに素)な時は端点以外に格子点はない。逆に言えば格子点はy/xの分母分子に対して同じ整数値で割ることができるときに存在する。
-// その理由は傾きの比率を維持しつつ分母分子を整数値で小さくすることができたらそこが格子点になるから。
-// よって互いに素にしたときに、その前に付く係数=gcd(x,y)-1が線分上の格子点の個数になる。
+// ユークリッド互除法は大きく2つの側面を持つ。
+// 1. gcd(a,b)=gcd(b,a%b): 最も基本的で、最大公約数を求めるために再帰的に同型の小問題に帰着させているところが肝
+// 2. gcd(a,b)=ax+by: 最大公約数はa,bの線型結合で表せる点。これは同値条件なので不定方程式の整数解の有無は右辺がgcd(a,b)の倍数になっているかどうかで判断できる。
+// 特にa,bが互いに疎な場合は必ず解を持つと言え、逆に右辺が1ならa,bは互いに素である必要がある。
 
-// ポイントは、y/xの分母分子を同じ整数で割るということを実現する上で、gcdが使えるということ。
-// gcdは最大公約数であり、約数は倍数と対になる概念で、かつ割り切れる数という側面もある。同じ整数で割りたい -> 公約数を探したい -> gcdを使うという発想になる。
+// ユークリッド互除法は再帰関数なので、漸化式と捉えても良い。遷移式は剰余の線形結合なので、末項の値(gcd(a,b))を初項の値(a,b)の線形結合で表現できることになる。
+// 故にべズーの等式: gcd(a,b)=ax+by を導くことができ、逆順にたどる(帰りがけ)で逆の遷移式を計算することで、x,yを求めることもできる。
+// 遷移式はgcd(b,r)からgcd(a,b)への遷移を考えれば良い。x=y_old, y=x_old-(a/b)*y_oldが導ける
 
-int gcd(int a, int b) {
-    if (b == 0) return a;
-    return gcd(b, a % b);
+int extgcd(int a, int b, int& x, int& y) {
+    if (b == 0) {
+        x = 1; y = 0;
+        return a;
+    }
+    int d = extgcd(b, a % b, y, x);
+    y -= (a / b) * x;
+    return d;
 }
 
-int main() {
-    int x1, y1, x2, y2; cin >> x1 >> y1 >> x2 >> y2;
-    int x = abs(x2 - x1);
-    int y = abs(y2 - y1);
+// int extgcd(int a, int b, int& x, int& y) {
+//     if (b == 0) {
+//         x = 1; y = 0;
+//         return a;
+//     }
+//     int d = extgcd(b, a % b, x, y);
+//     int x_old = x;
+//     x = y;
+//     y = x_old - (a / b) * y;
+//     return d;
+// }
 
-    if (x == 0 && y == 0) cout << 0 << endl;
-    else cout << gcd(x, y) - 1 << endl;
+int main() {
+    int a, b; cin >> a >> b;
+
+    int x, y;
+    int gcd = extgcd(a, b, x, y);
+
+    if (gcd != 1) cout << -1 << endl;
+    else {
+        if (x < 0) cout << 0 << -x;
+        else cout << x << 0;
+
+        if (y < 0) cout << 0 << -y;
+        else cout << y << 0;
+
+        cout << endl;
+    }
 }

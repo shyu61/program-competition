@@ -1,52 +1,55 @@
-// ユークリッド互除法(双六): p108
+// べき乗を高速に計算する: p114
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
-// ユークリッド互除法は大きく2つの側面を持つ。
-// 1. gcd(a,b)=gcd(b,a%b): 最も基本的で、最大公約数を求めるために再帰的に同型の小問題に帰着させているところが肝
-// 2. gcd(a,b)=ax+by: 最大公約数はa,bの線型結合で表せる点。これは同値条件なので不定方程式の整数解の有無は右辺がgcd(a,b)の倍数になっているかどうかで判断できる。
-// 特にa,bが互いに疎な場合は必ず解を持つと言え、逆に右辺が1ならa,bは互いに素である必要がある。
+// 繰り返し二乗法を使う
+// 再帰で書いてもループで書いても良い。ループで書くなら2乗なのでビット演算を使うと分かりやすい
+// 本質的にはどちらも、2乗の塊ごとに計算することで計算回数をlognに抑えている
+// いくつも2乗が作れるものは最大数塊を作って計算することでlognを実現できる
 
-// ユークリッド互除法は再帰関数なので、漸化式と捉えても良い。遷移式は剰余の線形結合なので、末項の値(gcd(a,b))を初項の値(a,b)の線形結合で表現できることになる。
-// 故にべズーの等式: gcd(a,b)=ax+by を導くことができ、逆順にたどる(帰りがけ)で逆の遷移式を計算することで、x,yを求めることもできる。
-// 遷移式はgcd(b,r)からgcd(a,b)への遷移を考えれば良い。x=y_old, y=x_old-(a/b)*y_oldが導ける
+int N;
 
-int extgcd(int a, int b, int& x, int& y) {
-    if (b == 0) {
-        x = 1; y = 0;
-        return a;
+int pow(int x, int n) {
+    if (n == 0) return 1;
+    if (n % 2 == 0) {
+        return pow(x * x, n / 2) % N;
     }
-    int d = extgcd(b, a % b, y, x);
-    y -= (a / b) * x;
-    return d;
+    return pow(x * x, 2 / n) * x % N;
 }
 
-// int extgcd(int a, int b, int& x, int& y) {
-//     if (b == 0) {
-//         x = 1; y = 0;
-//         return a;
+// ビット演算で考えても良い
+// int pow(int x, int n) {
+//     ll res = 1;
+//     while (n > 0) {
+//         // 最終桁が1の時に演算する
+//         if (n & 1) res = res * x % N;
+//         x = x * x % N;
+//         // 1ループで1シフトするのでlogn回ループが回る
+//         n >>= 1;
 //     }
-//     int d = extgcd(b, a % b, x, y);
-//     int x_old = x;
-//     x = y;
-//     y = x_old - (a / b) * y;
-//     return d;
 // }
 
-int main() {
-    int a, b; cin >> a >> b;
-
-    int x, y;
-    int gcd = extgcd(a, b, x, y);
-
-    if (gcd != 1) cout << -1 << endl;
-    else {
-        if (x < 0) cout << 0 << -x;
-        else cout << x << 0;
-
-        if (y < 0) cout << 0 << -y;
-        else cout << y << 0;
-
-        cout << endl;
+bool is_prime(int x) {
+    // O(sqrt(x))
+    for (int i = 2; i * i < x; i++) {
+        if (x % i == 0) return false;
     }
+    return true;
+}
+
+int main() {
+    cin >> N;
+    if (is_prime(N)) {
+        cout << "No" << endl;
+        return 0;
+    }
+
+    for (int x = 1; x < N; x++) {
+        if (pow(x, N) % N != x % N) {
+            cout << "No" << endl;
+            return 0;
+        }
+    }
+    cout << "Yes" << endl;
 }

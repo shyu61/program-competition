@@ -1,43 +1,53 @@
-// グラフの探索: p93
+// 最短路問題(ベルマンフォード法): p95
 #include <bits/stdc++.h>
 using namespace std;
 
-// n部グラフ: 隣接する頂点を異なる色で塗る時、n色で塗り切れるグラフ
-// 正確には、「同集合内の頂点同士は互いに隣接しない」という条件を満たすn個の頂点集合に分けることができるグラフ
+// ベルマンフォード法: 計算量がO(VE)でダイクストラより不利だが負の重みにも適用でき、負のサイクル検出にも使える
+// グラフが閉路を持たないDAGとかならDPなのでトポロジカル順に更新すればO(E)で処理できる
+// 閉路がある場合は、1回の緩和操作で経路が短い方から少なくとも1つは最短経路が確定することを利用して、V-1回緩和操作を行う。
+// (最短経路は最長のものでもV-1以下なので、V-1回緩和すればすべての最短経路が確定する)
+// 貪欲法であるダイクストラと比較して、全探索的な手法と言える
 
-int n;
-vector<vector<int>> G;
-vector<int> color;
+struct Edge {
+    int to, cost;
+    Edge(int to, int cost): to(to), cost(cost) {};
+};
 
-bool dfs(int v, int c) {
-    for (auto adj : G[v]) {
-        if (color[adj] != 0) {
-            if (color[adj] == c) return false;
-            continue;
+const int INF = 1e9 + 1;
+int n, m, s;
+vector<vector<Edge>> G;
+vector<int> d;
+
+void bellmanFord() {
+    while (1) {
+        bool update = false;
+        for (int i = 0; i < n; i++) {
+            for (auto adj : G[i]) {
+                if (d[i] != INF && d[adj.to] > d[i] + adj.cost) {
+                    d[adj.to] = d[i] + adj.cost;
+                    update = true;
+                }
+            }
         }
-        color[adj] = -c;
-        if (!dfs(adj, -c)) return false;
+        // 最大でもV-1回まわればいづれのdも更新はされなくなる
+        if (!update) break;
     }
-    return true;
 }
 
 int main() {
-    cin >> n;
-    G = vector<vector<int>>(n);
-    color = vector<int>(n);
-
-    for (int i = 0; i < n; i++) {
-        int u, v; cin >> u >> v;
-        G[u].push_back(v);
-        G[v].push_back(u);
+    cin >> n >> m >> s;
+    G = vector<vector<Edge>>(n);
+    for (int i = 0; i < m; i++) {
+        int u, v, cost; cin >> u >> v >> cost;
+        G[u].emplace_back(v, cost);
     }
 
+    d = vector<int>(n, INF);
+    d[s] = 0;
+    bellmanFord();
+
     for (int i = 0; i < n; i++) {
-        if (color[i] != 0) continue;
-        if (!dfs(i, 1)) {
-            cout << "No" << endl;
-            return 0;
-        }
+        if (d[i] == INF) cout << "INF" << endl;
+        else cout << d[i] << endl;
     }
-    cout << "Yes" << endl;
 }

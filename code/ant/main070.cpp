@@ -1,42 +1,38 @@
-// Crazy Rows: p119
+// Bribe the Prisoners: p121
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
 
-// いわゆる逐次問題。アプローチ方法は、全探索/貪欲法/DP/グラフ/stack,queueなど多岐にわたる
-// 全探索は40!になるので間に合わないし、グラフもフィットしなさそう。DPはどの部分をswapするか絞りにくいので考えにくく、構造的にstack,queueは使いにくい。
-// なんとなく、違反している行だけを移動させることで最小コストで達成できそう -> 貪欲法でやってみる
+// 棒切り問題の一種。典型的な逐次問題なのでDPで解く
+// DPを考えるとき重要なのは、遷移式と小問題の設計
+// 多くはどういう遷移をするから、どう小問題を設計すべき（どう状態を持つべき）かが決まる。
+// 今回は、1人解放した時にコストはその囚人が属する連結成分（区間長）に依存することがわかる
+// つまり状態も区間について持てば良く、ゴールはdp[0][q+1]を求めることだと気付ける
 
-// 解法: 違反している位置に持って来れるもののうち、それより右側で最も近いものを持ってくる。この操作を繰り返す
+// 忘れがちだがdpは再帰構造を持っている。目的を達成するために分割して計算されそれが統治することで求解する。
+// このイメージを忘れないこと
+
+// またこの問題は棒切り問題の一種であり、
+// 2分割を繰り返していく場合のコスト最小化問題はDPで区間コストに関する状態遷移を記述すれば良いと覚えておくと良い
+
 
 int main() {
-    int n; cin >> n;
-    vector<int> a(n, -1);
-    for (int i = 0; i < n; i++) {
-        string x; cin >> x;
-        for (int j = 0; j < n; j++) {
-            if (x[j] == '1') a[i] = j;
-        }
-    }
+    int p, q; cin >> p >> q;
+    vector<int> a(q + 2);
+    a[0] = 0; a[q + 1] = p + 1;
+    for (int i = 0; i < q; i++) cin >> a[i];
 
-    int ans = 0;
-    // 上から順に違反している行を探す
-    for (int i = 0; i < n; i++) {
-        // 違反
-        if (a[i] > i) {
-            // iに持って来れるものを探す
-            for (int j = i + 1; j < n; j++) {
-                // jが持って来れるのでiまで順にswapする
-                if (a[j] <= i) {
-                    while (j > i) {
-                        swap(a[j], a[j - 1]);
-                        j--;
-                        ans++;
-                    }
-                    break;
-                }
+    sort(a.begin(), a.end());
+    vector<vector<int>> dp(q + 2, vector<int>(q + 2));
+
+    for (int w = 2; w <= q + 1; w++) {
+        for (int i = 0; i + w <= q + 1; i++) {
+            int minv = p;
+            for (int k = i + 1; k < i + w; k++) {
+                minv = min(minv, dp[i][k] + dp[k][i + w]);
             }
+            dp[i][i + w] = minv + (a[i + w] - a[i] - 2);
         }
     }
-    cout << ans << endl;
+    cout << dp[0][q + 1] << endl;
 }

@@ -1,130 +1,60 @@
-// 応用問題(Conscription): p103
+// 応用問題(Layout): p104
 #include <bits/stdc++.h>
 using namespace std;
 
-// prim法とkruskal法は計算量もほぼ同じで、どちらも負の重みを扱えるので違いはほとんどない。
-// しかしkruskalはグラフが連結でない場合はmstの森の合計を求めることができるという性質を持っている。
-// これはprim法が徐々にmstを成長させていくのに対して、kruskalはmstのパーツそれぞれで成長し最終的に1つにmergeするという成長戦略をとっていることに起因する。
+// いわゆる牛ゲーと呼ばれる問題。"""重みが固定値ではなく不等式制約下での、2点の最大値を求める問題は、最短経路問題に帰着できる"""というもの。
+// 直感的に理解するのは非常に難しいので、有名問題として押さえておく。
+// ポイントは、最短経路問題は本質的には不等式制約下の最大値問題であるということ。du <= dv + eとしたとき、v->uへの最短経路はvがuの最短経路上に存在するときであり、
+// この時等式が成立する。これはdu - dv <= eの最大値を求めていることに他ならない。
+// これが牛ゲーにも当てはまる。このdu - dv <= eの形に不等式制約を変形し、v->uへeのedgeを張ったグラフにおける最短経路問題を解けば良いことになる。
+// 通常の最大経路問題は、重みに-1をかけてベルマンフォードを使うことで解ける。
 
-struct UnionFind {
-    // 親のインデックスを保持する
-    // rootは負の値を取り、その絶対値がその木における要素数を表す
-    vector<int> par;
+// すごいところは線形計画問題が、よりシンプルに最短経路問題として求解できる点。単体法などよりも遥かに効率的。
 
-    UnionFind(int n) : par(n, -1) {}
-    void init(int n) { par.assign(n, -1); }
-
-    int root(int x) {
-        if (par[x] < 0) return x;
-        else return par[x] = root(par[x]);  // 経路圧縮
-    }
-
-    bool same(int x, int y) {
-        return root(x) == root(y);
-    }
-
-    bool unite(int x, int y) {
-        x = root(x), y = root(y);
-        if (x == y) return false;
-        // 常に小さい木を大きい木に結合する
-        if (par[x] > par[y]) swap(x, y);
-        par[x] += par[y];
-        par[y] = x;
-        return true;
-    }
-
-    int size(int x) {
-        return -par[root(x)];
-    }
-};
+// TODO: 直感的な意味を見出す
 
 struct Edge {
     int from, to, cost;
-    Edge(int from, int to, int cost) : from(from), to(to), cost(cost) {};
-    bool operator<(const Edge &other) const {
-        return cost < other.cost;
-    };
+    Edge (int from, int to, int cost) : from(from), to(to), cost(cost) {};
 };
 
-const int C = 10000;
-int r, V;
-vector<Edge> E;
+const int INF = 1e9 + 1;
+int n;
+vector<Edge> es;
 
-int kruskal() {
-    sort(E.begin(), E.end());
-    UnionFind uf(V);
-    int total = 0;
-    for (auto e : E) {
-        if (uf.same(e.from, e.to)) continue;
-        uf.unite(e.from, e.to);
-        total += e.cost;
-    }
-
-    return total;
-}
-
-int main() {
-    int n, m; cin >> n >> m >> r;
-    V = n + m;
-    for (int i = 0; i < r; i++) {
-        int x, y, cost; cin >> x >> y >> cost;
-        E.emplace_back(x, y + n, -cost);
-    }
-    cout << C * V + kruskal() << endl;
-}
-
-// ================================================
-// prim法による別解
-
-struct Edge {
-    int to, cost;
-    Edge(int to, int cost) : to(to), cost(cost) {};
-};
-
-const int C = 10000;
-int n, m, V;
-vector<vector<Edge>> G;
-vector<bool> used;
-
-int prim(int s) {
-    vector<bool> in_mst(V);
-    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-    pq.emplace(0, s);
-    used[s] = true;
-
-    int total = 0;
-    while (!pq.empty()) {
-        auto [cost, v] = pq.top(); pq.pop();
-
-        if (in_mst[v]) continue;
-
-        total += cost;
-        used[v] = true;
-        in_mst[v] = true;
-
-        for (auto adj : G[v]) {
-            if (!in_mst[adj.to]) {
-                pq.emplace(adj.cost, adj.to);
+int bellmanFord() {
+    vector<int> dist(n, INF);
+    dist[0] = 0;
+    int cnt = 0;
+    for (int i = 0; ; i++) {
+        bool update = false;
+        for (auto e : es) {
+            if (dist[e.to] > dist[e.from] + e.cost) {
+                dist[e.to] = dist[e.from] + e.cost;
+                update = true;;
             }
         }
+        if (!update) break;
+        if (i == n - 1) {
+            // 負の閉路検出
+            return -1;
+        }
     }
-    return total;
+    if (dist[n - 1] == INF) return -2;
+    return dist[n - 1];
 }
 
 int main() {
-    int r; cin >> n >> m >> r;
-    V = n + m;
-    G = vector<vector<Edge>>(V);
-    used = vector<bool>(V);
-    for (int i = 0; i < r; i++) {
-        int x, y, cost; cin >> x >> y >> cost;
-        y += n; cost = -cost;
-        G[x].emplace_back(y, cost);
-        G[y].emplace_back(x, cost);
+    int ml, md; cin >> n >> ml >> md;
+    for (int i = 0; i < n; i++) es.emplace_back(i, i - 1, 0);
+    for (int i = 0; i < ml; i++) {
+        int al, bl, dl; cin >> al >> bl >> dl;
+        es.emplace_back(--al, --bl, dl);
     }
-    int total = C * V;
-    for (int i = 0; i < V; i++) {
-        if (!used[i]) total += prim(i);
+    for (int i = 0; i < md; i++) {
+        int al, bl, dl; cin >> al >> bl >> dl;
+        es.emplace_back(--bl, --al, -dl);
     }
-    cout << total << endl;
+
+    cout << bellmanFord() << endl;
 }

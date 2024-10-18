@@ -1,65 +1,55 @@
-// 計算問題に対するDP(重複組み合わせ): p67
+// プライオリティキューとヒープ: p71
 #include <bits/stdc++.h>
 using namespace std;
 
-// 複雑な組合せに関する問題なのでDPを考える
-// 組合せは樹形図で表せる -> 再帰構造を持つので、再帰の遷移を定式化できればDPが実装できる
+// heapは完全二分木なので親->子,子->親のノード番号を計算できる
+// これを利用してheapではポインターではなく配列で表現されることが多い
 
-// 組合せも基本はナップサックDPで考えるのは同じ
-// dp[i][j] = sigma(k=0, min(j, a[i])) dp[i - 1][j - k];
-// 一般論として、dpの遷移式にsigmaがある場合は、差分を取ることで消去できることが多い。
-// これは累積和と同じ考え方である。
+const int MAXN = 1e6;
+vector<int> heap(MAXN);
+int sz = 0;
 
-// 累積和は区間和を何度も求める必要がある時に検討すべき手法だが、dpの高速化でも使えることがある。
-// dpで遷移式にsigmaが含まれる時は累積和が使えないか検討する。遷移は基本ループで書くことが多いため、内部ループでsigma計算をすることになるが、
-// これはいわゆる"区間和を何度も求める"という操作をしているに他ならない。区間の形が累積和を使えるかは問題による。
+// 下から上へ
+void push(int x) {
+    int i = sz++;
 
-int main() {
-    int n, m; cin >> n >> m;
-    vector<int> a(n);
-    for (int i = 0; i <= n; i++) cin >> a[i];
-    int M; cin >> M;
-
-    vector<vector<int>> dp(n + 1, vector<int>(m + 1));
-    for (int i = 0; i <= n; i++) dp[i][0] = 1;
-
-    for (int i = 0; i < n; i++) {
-        for (int j = 1; j <= m; j++) {
-            if (j - 1 - a[i] >= 0) {
-                dp[i + 1][j] = (dp[i + 1][j - 1] + dp[i][j] - dp[i][j - 1 - a[i]] + M) % M;
-            } else {
-                dp[i + 1][j] = (dp[i + 1][j - 1] + dp[i][j]) % M;
-            }
-        }
+    while (i > 0) {
+        int p = (i - 1) / 2;
+        if (heap[p] <= x) break;
+        heap[i] = heap[p];
+        i = p;
     }
-
-    cout << dp[n][m] << endl;
+    heap[i] = x;
 }
 
-// 直接的に累積和を使う解法
-int main() {
-    int n, m; cin >> n >> m;
-    vector<int> a(n);
-    for (int i = 0; i <= n; i++) cin >> a[i];
-    int M; cin >> M;
+int top() {
+    return heap[0];
+}
 
-    vector<vector<int>> dp(n + 1, vector<int>(m + 1));
-    for (int i = 0; i <= n; i++) dp[i][0] = 1;
+// 上から下へ
+void pop() {
+    int x = heap[--sz];
+    int i = 0;
+    // leafに辿り着くまで -> 子のノード番号を計算できる範囲まで
+    while (i * 2 + 1 < sz) {
+        int a = i * 2 + 1;
+        int b = i * 2 + 2;
+        if (heap[a] > heap[b]) a = b;
 
-    for (int i = 0; i < n; i++) {
-        // 累積和を先に計算しておく
-        vector<int> s(m + 1);
-        s[0] = dp[i][0];
-        for (int j = 1; j <= m; j++) s[j] = s[j - 1] + dp[i][j];
-
-        for (int j = 1; j <= m; j++) {
-            if (j - 1 - a[i] >= 0) {
-                dp[i + 1][j] = s[j] - s[j - 1 - a[i]];
-            } else {
-                dp[i + 1][j] = s[j];
-            }
-        }
+        if (x <= heap[a]) break;
+        heap[i] = heap[a];
+        i = a;
     }
+    heap[i] = x;
+}
 
-    cout << dp[n][m] << endl;
+int main() {
+    push(100);
+    push(1);
+    push(3);
+    push(2);
+
+    cout << top() << endl;
+    pop();
+    cout << top() << endl;
 }

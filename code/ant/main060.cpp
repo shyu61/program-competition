@@ -1,55 +1,130 @@
-// 応用問題(Roadblocks): p102
+// 応用問題(Conscription): p103
 #include <bits/stdc++.h>
 using namespace std;
 
-// 2番目の最短経路を求める問題。
-// 1. SSSPのアルゴリズムを改変して解くか全く別のアプローチで解くかを考える。後者はコストが高いので一旦前者で行けると仮定して考える。
-// 2. ダイクストラかベルマンフォードどちらでいくかを考えるが、負の重みがないので一旦ダイクストラで考えてみる。
-// 3. まず最短経路を求めてから2番目の経路を求めるか、ダイクストラの実行中に一緒に2番目の経路も求めるかを考える。
-// 最短経路木を元に2番目を導けるかを考えたときに、そう簡単には導けなさそうと思えれば、ダイクストラを実行しながら2番目の経路も同時の保持する方が良さそうだと思いつける。
-// ハフマン木を使った2分割を繰り返していくコストの最小化問題でも、各ステップ内で最小と2番目に小さい要素を抽出していた。つまり逐次的なアルゴリズムにおいて、各ステップで2つの最小値を取り出すことは容易であるとわかる。
-// 4. ダイクストラは最短距離を更新していくが、その際に同時に2番目も保持すればよい。ここで注意点は更新対象が2つになったということ。
-// d2の更新時にpqにpushしないと正しいd2が導かれない。しかしこの要素はdの更新には影響を与えない(常にd2>=dが成立するため)。ゆえに早期return条件もd2に対して行う必要がある。
+// prim法とkruskal法は計算量もほぼ同じで、どちらも負の重みを扱えるので違いはほとんどない。
+// しかしkruskalはグラフが連結でない場合はmstの森の合計を求めることができるという性質を持っている。
+// これはprim法が徐々にmstを成長させていくのに対して、kruskalはmstのパーツそれぞれで成長し最終的に1つにmergeするという成長戦略をとっていることに起因する。
+
+struct UnionFind {
+    // 親のインデックスを保持する
+    // rootは負の値を取り、その絶対値がその木における要素数を表す
+    vector<int> par;
+
+    UnionFind(int n) : par(n, -1) {}
+    void init(int n) { par.assign(n, -1); }
+
+    int root(int x) {
+        if (par[x] < 0) return x;
+        else return par[x] = root(par[x]);  // 経路圧縮
+    }
+
+    bool same(int x, int y) {
+        return root(x) == root(y);
+    }
+
+    bool unite(int x, int y) {
+        x = root(x), y = root(y);
+        if (x == y) return false;
+        // 常に小さい木を大きい木に結合する
+        if (par[x] > par[y]) swap(x, y);
+        par[x] += par[y];
+        par[y] = x;
+        return true;
+    }
+
+    int size(int x) {
+        return -par[root(x)];
+    }
+};
+
+struct Edge {
+    int from, to, cost;
+    Edge(int from, int to, int cost) : from(from), to(to), cost(cost) {};
+    bool operator<(const Edge &other) const {
+        return cost < other.cost;
+    };
+};
+
+const int C = 10000;
+int r, V;
+vector<Edge> E;
+
+int kruskal() {
+    sort(E.begin(), E.end());
+    UnionFind uf(V);
+    int total = 0;
+    for (auto e : E) {
+        if (uf.same(e.from, e.to)) continue;
+        uf.unite(e.from, e.to);
+        total += e.cost;
+    }
+
+    return total;
+}
+
+int main() {
+    int n, m; cin >> n >> m >> r;
+    V = n + m;
+    for (int i = 0; i < r; i++) {
+        int x, y, cost; cin >> x >> y >> cost;
+        E.emplace_back(x, y + n, -cost);
+    }
+    cout << C * V + kruskal() << endl;
+}
+
+// ================================================
+// prim法による別解
 
 struct Edge {
     int to, cost;
-    Edge(int to, int cost): to(to), cost(cost) {};
+    Edge(int to, int cost) : to(to), cost(cost) {};
 };
 
-const int INF = 5e8 + 1;
+const int C = 10000;
+int n, m, V;
+vector<vector<Edge>> G;
+vector<bool> used;
 
-int main() {
-    int n, m; cin >> n >> m;
-    vector<vector<Edge>> G(n);
-    for (int i = 0; i < m; i++) {
-        int u, v, cost; cin >> u >> v >> cost;
-        u--; v--;
-        G[u].emplace_back(v, cost);
-        G[v].emplace_back(u, cost);
-    }
-
+int prim(int s) {
+    vector<bool> in_mst(V);
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
-    pq.emplace(0, 0);
-    vector<int> d(n, INF), d2(n, INF);  // 各頂点への2番目の最短路
-    d[0] = d2[0] = 0;
+    pq.emplace(0, s);
+    used[s] = true;
 
+    int total = 0;
     while (!pq.empty()) {
         auto [cost, v] = pq.top(); pq.pop();
-        if (cost > d2[v]) continue;
+
+        if (in_mst[v]) continue;
+
+        total += cost;
+        used[v] = true;
+        in_mst[v] = true;
 
         for (auto adj : G[v]) {
-            int cand = d[v] + adj.cost;
-
-            if (d[adj.to] > cand) {
-                swap(d[adj.to], cand);
-                pq.emplace(d[adj.to], adj.to);
-            } else if (d2[adj.to] > cand) {
-                d2[adj.to] = cand;
-                pq.emplace(d2[adj.to], adj.to);
+            if (!in_mst[adj.to]) {
+                pq.emplace(adj.cost, adj.to);
             }
         }
     }
+    return total;
+}
 
-    cerr << d[n - 1] << endl;
-    cout << d2[n - 1] << endl;
+int main() {
+    int r; cin >> n >> m >> r;
+    V = n + m;
+    G = vector<vector<Edge>>(V);
+    used = vector<bool>(V);
+    for (int i = 0; i < r; i++) {
+        int x, y, cost; cin >> x >> y >> cost;
+        y += n; cost = -cost;
+        G[x].emplace_back(y, cost);
+        G[y].emplace_back(x, cost);
+    }
+    int total = C * V;
+    for (int i = 0; i < V; i++) {
+        if (!used[i]) total += prim(i);
+    }
+    cout << total << endl;
 }

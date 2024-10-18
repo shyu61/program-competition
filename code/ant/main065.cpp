@@ -1,55 +1,57 @@
-// べき乗を高速に計算する: p114
+// 素数に関する基本的なアルゴリズム(素数判定): p110
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
 
-// 繰り返し二乗法を使う
-// 再帰で書いてもループで書いても良い。ループで書くなら2乗なのでビット演算を使うと分かりやすい
-// 本質的にはどちらも、2乗の塊ごとに計算することで計算回数をlognに抑えている
-// いくつも2乗が作れるものは最大数塊を作って計算することでlognを実現できる
-
-int N;
-
-int pow(int x, int n) {
-    if (n == 0) return 1;
-    if (n % 2 == 0) {
-        return pow(x * x, n / 2) % N;
-    }
-    return pow(x * x, 2 / n) * x % N;
-}
-
-// ビット演算で考えても良い
-// int pow(int x, int n) {
-//     ll res = 1;
-//     while (n > 0) {
-//         // 最終桁が1の時に演算する
-//         if (n & 1) res = res * x % N;
-//         x = x * x % N;
-//         // 1ループで1シフトするのでlogn回ループが回る
-//         n >>= 1;
-//     }
-// }
-
-bool is_prime(int x) {
-    // O(sqrt(x))
-    for (int i = 2; i * i < x; i++) {
-        if (x % i == 0) return false;
+// 素数判定: O(√n)
+bool is_prime(int n) {
+    for (int i = 2; i * i <= n; i++) {
+        if (n % i == 0) return false;
     }
     return true;
 }
 
-int main() {
-    cin >> N;
-    if (is_prime(N)) {
-        cout << "No" << endl;
-        return 0;
-    }
-
-    for (int x = 1; x < N; x++) {
-        if (pow(x, N) % N != x % N) {
-            cout << "No" << endl;
-            return 0;
+// 約数の列挙: O(√n)
+vector<int> divisor(int n) {
+    vector<int> res;
+    for (int i = 2; i * i <= n; i++) {
+        if (n % i == 0) {
+            res.push_back(i);
+            // i * i == nの時はiとn/1が一致するので入れない
+            if (i != n / i) res.push_back(n / i);
         }
     }
-    cout << "Yes" << endl;
+    return res;
+}
+
+// 素因数分解: O(√n)
+map<int, int> prime_factor(int n) {
+    map<int, int> res;
+    for (int i = 2; i * i <= n; i++) {
+        while (n % i == 0) {
+            res[i]++;
+            n /= i;
+        }
+    }
+    // √nより大きい方の素因数があるということ
+    if (n != 1) res[n] = 1;
+    return res;
+}
+
+int main() {
+    int n; cin >> n;
+
+    // 素数判定
+    cout << is_prime(n) << endl;
+
+    // 約数の列挙
+    vector<int> divisors = divisor(n);
+    for (auto v : divisors) cout << v << " ";
+    cout << endl;
+
+    // 素因数分解
+    map<int, int> factors = prime_factor(n);
+    for (auto [k, v] : factors) {
+        cout << k << ": " << v << ", ";
+    }
+    cout << endl;
 }

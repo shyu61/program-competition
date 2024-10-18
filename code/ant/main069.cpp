@@ -1,23 +1,42 @@
-// Minimum Scalar Product: p117
+// Crazy Rows: p119
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
 
-// 組み合わせ最適化問題なので、全探索/貪欲法/DP/グラフなどを考える
-// smallは全探索でいけるがlargeは難しそうで、メモ化も難しい
-// 貪欲でいけないかをまず考えてみる。明らかに小さい数と大きい数を掛け合わせれば良いことに気付くのでsortすれば良いことに気づける
-// サンプルを試してみても良い。
+// いわゆる逐次問題。アプローチ方法は、全探索/貪欲法/DP/グラフ/stack,queueなど多岐にわたる
+// 全探索は40!になるので間に合わないし、グラフもフィットしなさそう。DPはどの部分をswapするか絞りにくいので考えにくく、構造的にstack,queueは使いにくい。
+// なんとなく、違反している行だけを移動させることで最小コストで達成できそう -> 貪欲法でやってみる
+
+// 解法: 違反している位置に持って来れるもののうち、それより右側で最も近いものを持ってくる。この操作を繰り返す
 
 int main() {
     int n; cin >> n;
-    vector<int> v1(n), v2(n);
-    for (int i = 0; i < n; i++) cin >> v1[i];
-    for (int i = 0; i < n; i++) cin >> v2[i];
+    vector<int> a(n, -1);
+    for (int i = 0; i < n; i++) {
+        string x; cin >> x;
+        for (int j = 0; j < n; j++) {
+            if (x[j] == '1') a[i] = j;
+        }
+    }
 
-    sort(v1.begin(), v1.end());
-    sort(v2.rbegin(), v2.rend());
-
-    ll ans = 0;
-    for (int i = 0; i < n; i++) ans += ll(v1[i]) * v2[i];
+    int ans = 0;
+    // 上から順に違反している行を探す
+    for (int i = 0; i < n; i++) {
+        // 違反
+        if (a[i] > i) {
+            // iに持って来れるものを探す
+            for (int j = i + 1; j < n; j++) {
+                // jが持って来れるのでiまで順にswapする
+                if (a[j] <= i) {
+                    while (j > i) {
+                        swap(a[j], a[j - 1]);
+                        j--;
+                        ans++;
+                    }
+                    break;
+                }
+            }
+        }
+    }
     cout << ans << endl;
 }
