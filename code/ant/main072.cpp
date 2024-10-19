@@ -15,17 +15,35 @@ using ll = long long;
 //     cout << lower_bound(a.begin(), a.end(), k) - a.begin() << endl;
 // }
 
+int n;
+vector<int> a;
+
+int lower(int x) {
+    int left = -1; // 0が条件を満みたす場合もあるので-1
+    int right = n; // n-1が条件を満たさない場合もあるのでn
+    while (right - left > 1) {
+        int mid = (left + right) / 2;
+        if (x <= a[mid]) right = mid;
+        else left = mid;
+    }
+    return right;
+}
+
+int upper(int x) {
+    int left = -1, right = n;
+    while (right - left > 1) {
+        int mid = (left + right) / 2;
+        if (x < a[mid]) right = mid;
+        else left = mid;
+    }
+    return right;
+}
+
 int main() {
     int n; cin >> n;
     vector<int> a(n);
     for (int i = 0; i < n; i++) cin >> a[i];
     int k; cin >> k;
 
-    int left = 0, right = n, mid;
-    while (left < right) {
-        mid = (left + right) / 2;
-        if (k <= a[mid]) right = mid;
-        else left = mid + 1;
-    }
-    cout << left << endl;
+    cout << lower(k) << endl;
 }
