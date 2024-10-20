@@ -19,6 +19,8 @@ int n;
 vector<int> a;
 
 int lower(int x) {
+    // left: 常に条件を満たさない
+    // right: 常に条件を満たす
     int left = -1; // 0が条件を満みたす場合もあるので-1
     int right = n; // n-1が条件を満たさない場合もあるのでn
     while (right - left > 1) {
