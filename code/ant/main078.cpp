@@ -1,4 +1,4 @@
-// 反転: p139
+// 反転(Face The Right Way): p139
 #include <bits/stdc++.h>
 using namespace std;
 
