@@ -1,4 +1,4 @@
-// 半分全列挙(A Values whose Sum is 0)
+// 半分全列挙(A Values whose Sum is 0): p147
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
