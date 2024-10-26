@@ -8,6 +8,10 @@ using ll = long long;
 // 座標系を分割する時は、それぞれはベクトルを持つと良い。結合処理が描きやすい。
 // セグ木で重要なのは更新方法。どうやって回転を伝播させていくかを考える。
 
+// RQMはsparse-tableでも実装できる。
+// sparse-tableは更新が発生しないものに使える。
+// セグ木よりメモリ効率が良くクエリはセグ木がO(logn)に対してO(loglogn)で動作するが、構築コストがセグ木がO(n)に対してO(nlogn)かかる
+
 int N, C;
 vector<double> L, vx, vy, vang;
 ll sz = 1;
