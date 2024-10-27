@@ -1,4 +1,4 @@
-// 最大流: p190
+// 最大流: p188
 #include <bits/stdc++.h>
 using namespace std;
 
