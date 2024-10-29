@@ -53,13 +53,13 @@ int main() {
 
     while (sz < N) sz *= 2;
     vx = vy = vang = vector<double>(sz * 2 - 1);
-    init(0, 0, N);
+    init(0, 0, sz);
 
     for (int i = 0; i < C; i++) {
         int s = S[i];
         double a = A[i] / 180.0 * M_PI;
 
-        change(s, a - prv[s], 0, 0, N);
+        change(s, a - prv[s], 0, 0, sz);
         prv[s] = a;
         cout << fixed << setprecision(2) << vx[0] << " " << vy[0] << endl;
     }
