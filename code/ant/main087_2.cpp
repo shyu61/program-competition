@@ -1,4 +1,4 @@
-// バケット法と平方分割: 168
+// バケット法と平方分割: p168
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
