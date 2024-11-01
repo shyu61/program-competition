@@ -28,6 +28,7 @@ int pow(int x, int n) {
 //         // 1ループで1シフトするのでlogn回ループが回る
 //         n >>= 1;
 //     }
+//     return res;
 // }
 
 bool is_prime(int x) {
