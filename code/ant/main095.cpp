@@ -1,62 +1,82 @@
-// 最大流: p188
+// データ構造を用いて高速化: p186
 #include <bits/stdc++.h>
 using namespace std;
 
-// フォードファルカーソンのアルゴリズム
-// 根幹は貪欲法で、dfsでcapが残っているpathを見つける度に目一杯流すという操作を繰り返す
-// 逆辺を導入している点がこのアルゴリズムのコアである。
-// 逆辺は見つかったpathでの流し方を後から修正するという操作を表現している。
-// これは今見つかったpathに目一杯流すのが最適なのか、後から見つかるpathに目一杯流すことが最適なのか現時点では判断できないため、
-// 未来に向けて過去を修正する権限を与えることこれを解決していると捉えることができる。
+// dpの立式自体は典型的なナップサック問題
+// dpの計算量を減らすテクの一つに離散的にしか値を取り得ない場合にループをそれに合わせて実行する方法がある
+// O(nm)で間に合わないからDPを高速化したい -> jは離散的でありt[i+1]だけ調べれば良い -> jのループをなくせる -> 最小値検索は区間の最小値なのでRMQでやればO(logn)で実行できる
 
-struct Edge {
-    int to, cap, rev;  // rev: 辺の番号
-    Edge() {};
-    Edge(int to, int cap, int rev) : to(to), cap(cap), rev(rev) {};
-};
+// ループを回す時、全体を回してるのか、ある区間を回しているのかを意識しておくと良い。
 
-const int INF = 1e8;  // 重みの最大値+1
-vector<vector<Edge>> G;
-vector<bool> used;
+const int INF = 5e5 + 1;
+int n, m, sz = 1;
+vector<int> s, t;
+vector<int> dp, dat;
 
-int dfs(int v, int t, int f) {
-    if (v == t) return f;
-    used[v] = true;
+void init() {
+    while (sz < n) sz *= 2;
+    dat = vector<int>(sz * 2 - 1, INF);
+}
 
-    // 逆辺も含めて探索する
-    for (auto &adj : G[v]) {
-        if (!used[adj.to] && adj.cap > 0) {
-            int d = dfs(adj.to, t, min(f, adj.cap));
-            if (d > 0) {
-                // 残余グラフを計算
-                adj.cap -= d;
-                G[adj.to][adj.rev].cap += d;
-                return d;
-            }
-        }
+void update(int k, int a) {
+    int id = k + sz - 1;
+    dat[id] = a;
+    while (id > 0) {
+        id = (id - 1) / 2;
+        dat[id] = min(dat[id * 2 + 1], dat[id * 2 + 2]);
     }
-    return 0;
+}
+
+int query(int a, int b, int id, int left, int right) {
+    if (b <= left || right <= a) return INF;
+    if (a <= left && right <= b) return dat[id];
+    else {
+        int vl = query(a, b, id * 2 + 1, left, (left + right) / 2);
+        int vr = query(a, b, id * 2 + 2, (left + right) / 2, right);
+        return min(vl, vr);
+    }
 }
 
 int main() {
-    int n, m; cin >> n >> m;
-    G = vector<vector<Edge>>(n);
-    for (int i = 0; i < m; i++) {
-        int from, to, cap; cin >> from >> to >> cap;
-        // from->toのedgeにとっての逆辺は次の行で追加するto->fromのedgeなので、
-        // そのedge番号はtoの最後のedge番号+1であり0-indexedなのでtoのedgeの本数と一致する
-        G[from].emplace_back(to, cap, G[to].size());
-        G[to].emplace_back(from, 0, G[from].size() - 1);  // 同時にcap=0で逆編も加える
-    }
-    int s, t; cin >> s >> t;
+    cin >> n >> m;
+    s = t = vector<int>(m + 1);
+    for (int i = 1; i <= m; i++) cin >> s[i] >> t[i];
 
-    used = vector<bool>(n);
-    int ans = 0;
-    while (1) {
-        fill(used.begin(), used.end(), false);
-        int f = dfs(s, t, INF);
-        if (f != 0) ans += f;
-        else break;
+    dp = vector<int>(n + 1, INF);
+    dp[0] = 0;
+    init();
+    update(1, 0);
+    for (int i = 0; i < m; i++) {
+        int v = min(dp[t[i + 1]], query(s[i + 1], t[i + 1] + 1, 0, 0, sz) + 1);
+        dp[t[i + 1]] = v;
+        update(t[i + 1], v);
     }
-    cout << ans << endl;
+    cout << dp[n] << endl;
 }
+
+// int main() {
+//     cin >> n >> m;
+//     s = t = vector<int>(m + 1);
+//     for (int i = 1; i <= m; i++) cin >> s[i] >> t[i];
+
+//     // i番目までを考える時、値がjまでソート済みの時の最小個数
+//     dp = vector<vector<int>>(m + 1, vector<int>(n + 1, INF));
+//     dp[0][1] = 0;
+//     for (int i = 0; i < m; i++) {
+//         for (int j = 0; j <= n; j++) {
+//             // i+1番目のsorterを使う時、最大値はt[i+1]に移動する
+//             if (j == t[i + 1]) {
+//                 int minv = INF;
+//                 // i+1番目のsorterはs[i+1]からしか移動できないので、dp[i]の時点でそれ以上に最大値が移動している必要がある
+//                 for (int k = s[i + 1]; k <= t[i + 1]; k++) {
+//                     minv = min(minv, dp[i][k]);
+//                 }
+//                 dp[i + 1][j] = min(dp[i][j], minv + 1);
+//             } else {
+//                 dp[i + 1][j] = dp[i][j];
+//             }
+//         }
+//     }
+
+//     cout << dp[m][n] << endl;
+// }
