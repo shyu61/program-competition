@@ -46,7 +46,7 @@ int main() {
         // from->toのedgeにとっての逆辺は次の行で追加するto->fromのedgeなので、
         // そのedge番号はtoの最後のedge番号+1であり0-indexedなのでtoのedgeの本数と一致する
         G[from].emplace_back(to, cap, G[to].size());
-        G[to].emplace_back(from, 0, G[from].size() - 1);  // 同時にcap=0で逆編も加える
+        G[to].emplace_back(from, 0, G[from].size() - 1);  // 同時にcap=0で逆辺も加える
     }
     int s, t; cin >> s >> t;
 
