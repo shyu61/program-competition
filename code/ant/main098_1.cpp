@@ -42,12 +42,6 @@ int dfs(int v, int t, int f) {
 int main() {
     int N, K, M; cin >> N >> K >> M;
     G = vector<vector<Edge>>(N + K + 2);  // s,tを含む
-    for (int i = 0; i < M; i++) {
-        int x, y; cin >> x >> y;
-        x--; y = y + N - 1;
-        addEdge(x, y, 1);
-    }
-
     int s = N + K, t = s + 1;
     // sourceから各コンピュータにedgeを張る
     // 各コンピュータは1つの仕事しかできないので、sourceからコンピュータへの流量は1にする
@@ -55,6 +49,12 @@ int main() {
     for (int i = 0; i < N; i++) addEdge(s, i, 1);
     // 各仕事からsinkにedgeを張る
     for (int i = 0; i < K; i++) addEdge(i + N, t, 1);
+
+    for (int i = 0; i < M; i++) {
+        int x, y; cin >> x >> y;
+        x--; y = y + N - 1;
+        addEdge(x, y, 1);
+    }
 
     used = vector<bool>(N + K + 2);
     int ans = 0;
