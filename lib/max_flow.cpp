@@ -2,8 +2,7 @@
 using namespace std;
 
 struct Edge {
-    int to, cap, rev;  // rev: 辺の番号
-    Edge() {};
+    int to, cap, rev;
     Edge(int to, int cap, int rev) : to(to), cap(cap), rev(rev) {};
 };
 
