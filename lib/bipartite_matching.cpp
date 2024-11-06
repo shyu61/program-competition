@@ -27,6 +27,7 @@ int bipartiteMatching(int N) {
     match = vector<int>(N, -1);
     used = vector<bool>(N);
     int res = 0;
+    // Nでも良いが、片方の頂点群を始点とする場合のみ調べれば十分
     for (int i = 0; i < N; i++) {
         if (match[i] >= 0) continue;
         fill(used.begin(), used.end(), false);
