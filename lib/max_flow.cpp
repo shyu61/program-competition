@@ -6,7 +6,8 @@ struct Edge {
     Edge(int to, int cap, int rev) : to(to), cap(cap), rev(rev) {};
 };
 
-const int INF = 1e8;  // 重みの最大値+1
+const int INF = 1e8;  // 重みの最大値
+int V;
 vector<vector<Edge>> G;
 vector<bool> used;
 
@@ -34,8 +35,8 @@ int dfs(int v, int t, int f) {
     return 0;
 }
 
-int maxFlow(int n, int s, int t) {
-    used = vector<bool>(n);
+int maxFlow(int s, int t) {
+    used = vector<bool>(V);
 
     int res = 0;
     while (1) {
@@ -47,29 +48,13 @@ int maxFlow(int n, int s, int t) {
     return res;
 }
 
-int bipartiteMatching(int N, int K, int s, int t) {
-    return maxFlow(N + K, s, t);
-}
-
 int main() {
-    // ---------- 最大フロー ----------
     int n, m, s, t; cin >> n >> m >> s >> t;
-    G = vector<vector<Edge>>(n);
+    V = n + 2;
+    G = vector<vector<Edge>>(V);
     for (int i = 0; i < m; i++) {
         int x, y, c; cin >> x >> y >> c;
         addEdge(x, y, c);
     }
-    maxFlow(n, s, t);
-
-    // ---------- 二部マッチング ----------
-    int N, K; cin >> N >> K;
-    G = vector<vector<Edge>>(N + K + 2);
-    int s = N + K, t = s + 1;
-    for (int i = 0; i < N; i++) addEdge(s, i, 1);
-    for (int i = 0; i < K; i++) addEdge(t, i + N, 1);
-    for (int i = 0; i < m; i++) {
-        int x, y; cin >> x >> y;
-        addEdge(x, y + N, 1);
-    }
-    bipartiteMatching(N, K, s, t);
+    maxFlow(s, t);
 }
