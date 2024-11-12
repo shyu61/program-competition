@@ -30,21 +30,14 @@ double dot(Vector a, Vector b) { return a.x * b.x + a.y * b.y; }
 double cross(Vector a, Vector b) { return a.x * b.y - a.y * b.x; }
 bool equals(double a, double b) { return fabs(a - b) < EPS; }
 
-const int COUNTER_CLOCKWISE = 1;
-const int CLOCKWISE = -1;
-const int ONLINE_BACK = 2;
-const int ONLINE_FRONT = -2;
-const int ON_SEGMENT = 0;
-int ccw(Point p0, Point p1, Point p2) {
-    // p0を基準に判定
-    Vector a = p1 - p0;  // 基準線分
-    Vector b = p2 - p0;
-
-    if (cross(a, b) > 0) return COUNTER_CLOCKWISE;
-    if (cross(a, b) < 0) return CLOCKWISE;
-    if (dot(a, b) < 0) return ONLINE_BACK;
-    if (a.norm() < b.norm()) return ONLINE_FRONT;
-    return ON_SEGMENT;
+int ccw(const Point &a, Point b, Point c) {
+    // a: 基準点
+    b = b - a, c = c - a;
+    if(cross(b, c) > EPS) return 1;    // COUNTER_CLOCKWISE
+    if(cross(b, c) < -EPS) return -1;  // CLOCKWISE
+    if(dot(b, c) < 0) return 2;        // ONLINE_BACK
+    if(b.norm() < c.norm()) return -2; // ONLINE_FRONT
+    return 0;                          // ON_SEGMENT
 }
 
 // 直線に対して射影した点を返す
