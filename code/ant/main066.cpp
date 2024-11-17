@@ -10,13 +10,14 @@ using ll = long long;
 int main() {
     int n; cin >> n;
 
-    vector<bool> a(n);
-    int cnt = 0;
     // O(nlog(log(n)))
+    vector<bool> is_prime(n + 1, true);
+    is_prime[0] = is_prime[1] = false;
+    int cnt = 0;
     for (int i = 2; i <= n; i++) {
-        if (a[i]) continue;
+        if (!is_prime[i]) continue;
         cnt++;
-        for (int j = 1; i * j <= n; j++) a[i * j] = true;
+        for (int j = 2 * i; j <= n; j += i) is_prime[j] = false;
     }
 
     cout << cnt << endl;
