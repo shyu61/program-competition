@@ -11,7 +11,7 @@ int V;
 vector<vector<Edge>> G;
 vector<bool> used;
 
-void addEdge(int from, int to, int cap) {
+void add_edge(int from, int to, int cap) {
     G[from].emplace_back(to, cap, G[to].size());
     G[to].emplace_back(from, 0, G[from].size() - 1);
 }
@@ -35,7 +35,7 @@ int dfs(int v, int t, int f) {
     return 0;
 }
 
-int maxFlow(int s, int t) {
+int max_flow(int s, int t) {
     used = vector<bool>(V);
 
     int res = 0;
@@ -54,7 +54,7 @@ int main() {
     G = vector<vector<Edge>>(V);
     for (int i = 0; i < m; i++) {
         int x, y, c; cin >> x >> y >> c;
-        addEdge(x, y, c);
+        add_edge(x, y, c);
     }
-    maxFlow(s, t);
+    max_flow(s, t);
 }

@@ -11,7 +11,7 @@ int n;
 vector<vector<Edge>> G;
 vector<vector<int>> d;
 
-void warshallFloyd() {
+void warshall_floyd() {
     for (int k = 0; k < n; k++) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {

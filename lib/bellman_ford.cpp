@@ -15,7 +15,7 @@ int n;
 vector<vector<Edge>> G;
 vector<int> d;
 
-void bellmanFord(int s) {
+void bellman_ford(int s) {
     d = vector<int>(n, INF);
     d[s] = 0;
     while (1) {

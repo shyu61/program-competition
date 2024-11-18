@@ -11,12 +11,12 @@ const int INF = 1e8; // 最大距離
 int V;
 vector<vector<Edge>> G;
 
-void addEdge(int from, int to, int cap, int cost) {
+void add_edge(int from, int to, int cap, int cost) {
     G[from].emplace_back(to, cap, cost, G[to].size());
     G[to].emplace_back(from, 0, -cost, G[from].size() - 1);
 }
 
-int minCostFlow(int s, int t, int f) {
+int min_cost_flow(int s, int t, int f) {
     vector<int> dist(V), prevv(V), preve(V), h(V);
     int res = 0;
     while (f > 0) {
@@ -64,9 +64,9 @@ int main() {
     G = vector<vector<Edge>>(n);
     for (int i = 0; i < m; i++) {
         int from, to, cap, cost; cin >> from >> to >> cap >> cost;
-        addEdge(from, to, cap, cost);
+        add_edge(from, to, cap, cost);
     }
 
     int V = n;
-    cout << minCostFlow(s, t, f) << endl;
+    cout << min_cost_flow(s, t, f) << endl;
 }

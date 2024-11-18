@@ -24,7 +24,7 @@ bool dfs(int v) {
     return false;
 }
 
-int bipartiteMatching() {
+int bipartite_matching() {
     // maxFlow(s, t)でもOK。その場合s,tを別途用意してV += 2する必要がある
     match = vector<int>(V, -1);
     used = vector<bool>(V);
@@ -48,5 +48,5 @@ int main() {
         G[x].push_back(y);
         G[y].push_back(x);
     }
-    cout << bipartiteMatching() << endl;
+    cout << bipartite_matching() << endl;
 }
