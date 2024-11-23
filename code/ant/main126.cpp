@@ -1,4 +1,4 @@
-// ゲームと必勝法(Euclid's Game): p273
+// ゲームと必勝法(Euclid's Game): p275
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
