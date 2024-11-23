@@ -13,7 +13,7 @@ bool is_prime(int n) {
 // 約数の列挙: O(√n)
 vector<int> divisor(int n) {
     vector<int> res;
-    for (int i = 2; i * i <= n; i++) {
+    for (int i = 1; i * i <= n; i++) {
         if (n % i == 0) {
             res.push_back(i);
             // i * i == nの時はiとn/1が一致するので入れない
