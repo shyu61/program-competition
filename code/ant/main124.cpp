@@ -1,4 +1,4 @@
-// ゲームと必勝法: p272
+// ゲームと必勝法(コインのゲーム1): p272
 #include <bits/stdc++.h>
 using namespace std;
 using ll = long long;
