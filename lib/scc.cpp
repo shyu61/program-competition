@@ -1,4 +1,3 @@
-// 強連結成分分解: p285
 #include <bits/stdc++.h>
 using namespace std;
 
