@@ -40,8 +40,7 @@ void rdfs(int v, int k) {
     }
 }
 
-int scc() {
-    int V; cin >> V;
+int scc(int V) {
     G = rG = vector<vector<int>>(V);
     used = vector<bool>(V);
     vs = cmp = vector<int>(V);
