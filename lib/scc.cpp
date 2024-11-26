@@ -41,7 +41,6 @@ void rdfs(int v, int k) {
 }
 
 int scc(int V) {
-    G = rG = vector<vector<int>>(V);
     used = vector<bool>(V);
     vs = cmp = vector<int>(V);
 
@@ -56,4 +55,11 @@ int scc(int V) {
         if (!used[vs[i]]) rdfs(vs[i], k++);
     }
     return k;
+}
+
+int main() {
+    int V = 10;
+    G = rG = vector<vector<int>>(V);
+    add_edge(1, 2);
+    scc(V);
 }
