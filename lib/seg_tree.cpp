@@ -3,21 +3,25 @@
 using namespace std;
 
 const int INF = 1e6;
-const int MAX_N = 1e5;
-int dat[MAX_N * 2 - 1];
-
-// 要素数
-int n;
+int sz;
+vector<int> dat;
 
 // segtreeの初期化
-void init() {
-    for (int i = 0; i < n * 2 - 1; i++) dat[i] = INF;
+void init(int n, vector<int>& a) {
+    while (sz < n) sz *= 2;
+    dat = vector<int>(sz * 2 - 1);
+    a.resize(sz, 0);
+
+    for (int i = 0; i < n; i++) dat[i + sz - 1] = a[i];
+    for (int i = sz - 2; i >= 0; i--) {
+        dat[i] = min(dat[i * 2 + 1], dat[i * 2 + 2]);
+    }
 }
 
 // k: k番目の値(ノード番号ではない), a: 更新値
 void update(int k, int a) {
     // ノード番号に変換
-    k += n - 1;
+    k += sz - 1;
     dat[k] = a;
     while (k > 0) {
         k = (k - 1) / 2;
