@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// LCA: 最小共通祖先
+// O(n)
 
 int root;
 vector<vector<int>> G;
