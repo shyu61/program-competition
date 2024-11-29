@@ -66,6 +66,8 @@ void dfs(int v, int p, int d, int& k) {
 }
 
 int lca(int u, int v) {
+    // セグ木やBITは重複を含む訪問番号で作られているので、queryするときは訪問番号を使う
+    // lcaの戻り値はノード番号なので、tourで訪問番号からノード番号に変換する
     int s = min(preorder[u], preorder[v]);
     int t = max(preorder[u], preorder[v]);
     return tour[rmq.query(s, t + 1, 0, 0, rmq.sz).second];
