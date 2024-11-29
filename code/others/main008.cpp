@@ -1,8 +1,8 @@
-// RMQの場合
+// Range Minimum Query (RMQ)
+// https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DSL_2_A&lang=ja
 #include <bits/stdc++.h>
 using namespace std;
 
-int INF = numeric_limits<int>::max();
 struct RMQ {
     vector<int> dat;
     int sz = 1;
@@ -20,12 +20,8 @@ struct RMQ {
     }
 
     // (value,index)
-    // [a, b)の最小値を探索
-    // k: ノード番号, [l, r)はそれに紐づく区間
     pair<int, int> query(int a, int b, int k, int l, int r) {
-        // [a, b)と[l, r)が交差しない場合は解なし
         if (b <= l || r <= a) return make_pair(INF, -1);
-        // [a, b)が[l, r)を完全に含んでいる時、このノードの値が解
         if (a <= l && r <= b) return make_pair(dat[k], k);
         else {
             auto [vl, il] = query(a, b, k * 2 + 1, l, (l + r) / 2);
@@ -36,7 +32,6 @@ struct RMQ {
 
     // k: 要素番号, a: 更新値
     void update(int k, int a) {
-        // ノード番号に変換
         k += sz - 1;
         dat[k] = a;
         while (k > 0) {
@@ -45,3 +40,25 @@ struct RMQ {
         }
     }
 };
+
+const int INF = numeric_limits<int>::max();
+
+int main() {
+    int n, q; cin >> n >> q;
+    vector<int> a(n, INF);
+
+    RMQ rmq(n, a);
+
+    while (q--) {
+        int c; cin >> c;
+        if (c) {
+            // find(s,t)
+            int s, t; cin >> s >> t;
+            cout << rmq.query(s, t + 1, 0, 0, rmq.sz).first << endl;
+        } else {
+            // update(i,x)
+            int i, x; cin >> i >> x;
+            rmq.update(i, x);
+        }
+    }
+}
