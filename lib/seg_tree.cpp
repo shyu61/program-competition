@@ -19,18 +19,17 @@ struct RMQ {
         }
     }
 
-    // (value,index)
     // [a, b)の最小値を探索
     // k: ノード番号, [l, r)はそれに紐づく区間
-    pair<int, int> query(int a, int b, int k, int l, int r) {
+    int query(int a, int b, int k, int l, int r) {
         // [a, b)と[l, r)が交差しない場合は解なし
-        if (b <= l || r <= a) return make_pair(INF, -1);
+        if (b <= l || r <= a) return INF;
         // [a, b)が[l, r)を完全に含んでいる時、このノードの値が解
-        if (a <= l && r <= b) return make_pair(dat[k], k);
+        if (a <= l && r <= b) return dat[k];
         else {
-            auto [vl, il] = query(a, b, k * 2 + 1, l, (l + r) / 2);
-            auto [vr, ir] = query(a, b, k * 2 + 2, (l + r) / 2, r);
-            return vl < vr ? make_pair(vl, il) : make_pair(vr, ir);
+            int vl = query(a, b, k * 2 + 1, l, (l + r) / 2);
+            int vr = query(a, b, k * 2 + 2, (l + r) / 2, r);
+            return min(vl, vr);
         }
     }
 
