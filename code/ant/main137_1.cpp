@@ -22,12 +22,12 @@ int main() {
    vector<int> dp(W + 1);
 
     for (int i = 0; i < n; ++i) {
-        // r=j%w[i]でグループ化
+        // 剰余でグループ化
         for (int r = 0; r < w[i]; r++) {
-            // j=r, r+w[i], r+2w[i], ...
             deque<pair<int, int>> deq;
-            // [0,W]を走査: 商jでループ
+            // 商でループ
             for (int j = 0; j * w[i] + r <= W; j++) {
+                // dp[jw[i] + r] = max{dp[(j-k)w[i] + r] - (j-k)v[i]} + jv[i]
                 int val = dp[j * w[i] + r] - j * v[i];
 
                 while (!deq.empty() && deq.back().first <= val) deq.pop_back();
