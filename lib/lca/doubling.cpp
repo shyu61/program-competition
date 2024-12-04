@@ -45,7 +45,7 @@ int lca(int u, int v) {
     // 二分探索を考える時は、lbは常に条件を満たさない、ubは常に条件を満たすようにとる
     // u,vはlbに該当し、条件を満たさない(parentが一致しない)場合はそこまでlbを動かせるので更新する
     for (int k = MAX_LOG_V - 1; k >= 0; k--) {
-        if (parent[k][u] != parent[k][v]) {
+        if (parent[k][u] != parent[k][v]) {  // lca以上は必ず一致するので、一致しない時点でlbを更新できる
             u = parent[k][u];
             v = parent[k][v];
         }
