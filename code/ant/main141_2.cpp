@@ -3,34 +3,52 @@
 using namespace std;
 using ll = long long;
 
-// ナイーブな実装
-
-// 整数計画問題のポイント
-// 1. 終了判定や枝刈り判定がしやすい形で初期化する
-//   - 保持する必要がある状態を洗い出す
-//     - どのマッチが残っているか
-//     - 各正方形が存在しているか
-//     - 各正方形を構成するマッチとの関係性
-// 2. 枝刈りの実装
-//   - 探索順序の工夫(木の形状の最適化)
-//     1. 最も制約の強い変数を優先する(可能な選択肢が少ない変数)
-//     2. 最も制約を課す変数を優先する(他の変数により多くの制約を課す変数)
-//   - 解が悪くなったら打ち切り(局所的な評価関数の利用)
-//     1. 状況が改善しない
-//     2. αβ法
-//     3. 必須条件の利用
+// ヒューリスティックなコスト見積もりを加味した実装
 
 const int INF = 2 * 5 * (5 + 1);
 int M, S, minv = INF;  // M: 初期状態での残りマッチ数, S: 初期状態での残り正方形数
 vector<vector<bool>> m;  // m[p][i]: マッチpが正方形iに含まれるか
 vector<int> mmax;  // mmax[i]: 正方形iを壊せるマッチ番号の最大値
 
+// p以降のマッチを考えた時の解の下限 => 最大独立集合と同じ(各独立な正方形を壊すのにはマッチ1本が必ず必要)
+int hstar(int p, vector<bool> state) {
+    vector<pair<int, int>> ps;
+    for (int i = 0; i < S; i++) {
+        if (state[i]) {
+            int num = 0;
+            for (int j = p; j < M; j++) {
+                if (m[j][i]) num++;
+            }
+            ps.emplace_back(num, i);
+        }
+    }
+    sort(ps.begin(), ps.end());
+    int res = 0;
+    // used[i]: Xに含まれる正方形でマッチiを含むものが存在する
+    vector<bool> used(M);
+    for (auto [_, id] : ps) {
+        bool ok = true;
+        for (int j = p; j < M; j++) {
+            if (m[j][id] && used[j]) {
+                ok = false;
+                break;
+            }
+        }
+        if (ok) {
+            res++;
+            for (int j = p; j < M; j++) {
+                if (m[j][id]) used[j] = true;
+            }
+        }
+    }
+    return res;
+}
+
 // state[i]: 正方形iが残ってるか
 int dfs(int p, int num, vector<bool> state) {
     if (p == M) return minv = num;
-    if (num >= minv) return INF;
+    if (num + hstar(p, state) >= minv) return INF;
 
-    // テクニック: ある操作を行うための条件が複数あって、それらが独立に判定可能な場合は、抽象化変数を使ってまとめて判定すると便利
     // use: マッチpを必ず除く
     // notuse: マッチpを必ず除かない
     bool use = false, notuse = true;
@@ -52,11 +70,6 @@ int dfs(int p, int num, vector<bool> state) {
     if (!notuse) res = min(res, dfs(p + 1, num + 1, state));
     return res;
 }
-
-// 初期化の難易度が高いが、「必要な情報は何か？」をまず考えて計算する順番を設計してから実装する
-// m[p][i]の計算には、明らかに正方形への採番と、その正方形を構成するマッチの番号つまりtop,bottom,left,rightを計算する必要があることがわかる
-// top,bottom,left,rightを計算するには、正方形のサイズと位置をパラメーターで渡せば良いこともわかる
-// top,bottom,left,rightの計算は繰り返し単位(周期性)を適切に考えればそれほど難しくない
 
 void init(int N, int num, vector<bool> removes) {
     int total = 2 * N * (N + 1);
