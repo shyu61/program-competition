@@ -10,7 +10,7 @@ using ll = long long;
 
 struct Trie {
     struct Node {
-        unordered_map<char, int> to;
+        unordered_map<char, int> to;  // prefix文字と総数を保持
         int cnt;
         Node(): cnt(0) {};
     };
