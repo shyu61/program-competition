@@ -48,3 +48,19 @@ void construct_sa(string S, vector<int>& sa) {
         for (int i = 0; i <= n; i++) rnk[i] = tmp[i];
     }
 }
+
+// SにTが含まれるかを判定
+// rolling-hashのO(|S|+|T|)に対しO(|T|log|S|)で計算でき、|S|が大きいとき有利になる
+bool contain(string S, vector<int>& sa, string T) {
+    // 二分探索でlbは常に満たさない, ubは常に満たす
+    int lb = 0, ub = S.length();
+    // O(log|S|)
+    while (ub - lb > 1) {
+        int m = (lb + ub) / 2;
+        // Sのsa[m]文字目から|T|文字とTを比較
+        // 比較コストはO(|T|)
+        if (S.compare(sa[m], T.length(), T) < 0) lb = m;  // Tの方が辞書順で後ならsaをmより後ろ側を探索する必要があるのでlb=mと更新する
+        else ub = m;
+    }
+    return S.compare(sa[ub], T.length(), T);
+}
