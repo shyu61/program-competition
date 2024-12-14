@@ -69,7 +69,6 @@ void rec(int v) {
     // 重心を求める
     get_subtree_size(v, -1);
     int s = get_centroids(v, -1, subtree_size[v]).second;
-    cout << s << endl;
     centroid[s] = true;
     // 分割する
     for (auto ch : G[s]) {

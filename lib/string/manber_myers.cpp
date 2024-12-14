@@ -25,6 +25,7 @@ bool compare_sa(int i, int j) {
 // 文字列Sの接頭辞配列を構築
 void construct_sa(string S, vector<int>& sa) {
     n = S.length();
+    rnk = tmp = vector<int>(n + 1);
 
     // 最初は1文字、ランクは文字コードにすれば良い
     for (int i = 0; i <= n; i++) {
