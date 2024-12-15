@@ -9,6 +9,11 @@ using ll = long long;
 // 開始位置を一つずらす前後で共通部分している部分は次のlcpにも含まれるという性質を利用して尺取り法によりO(n)で求めることができる
 // まさに尺取り法と同じ構造をしている
 
+// RMQを使った応用
+// extlcp(i,j) = min{lcp[x] | rank[i] <= x < rank[j]}
+// => lcpはsaで隣り合うsuffixどうしの共通prefixを表しており、rank[i]とrank[j]の間の全てのsuffixに共通するprefix数が上記の式になる
+// => 区間最小値問題なのでseg木により構築O(n), クエリO(logn)になる
+
 vector<int> rnk;
 
 // lcp[i]:=S[sa[i]:]とS[sa[i+1]:]の共通prefix数
