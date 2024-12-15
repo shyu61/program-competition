@@ -14,11 +14,40 @@ using ll = long long;
 // => lcpはsaで隣り合うsuffixどうしの共通prefixを表しており、rank[i]とrank[j]の間の全てのsuffixに共通するprefix数が上記の式になる
 // => 区間最小値問題なのでseg木により構築O(n), クエリO(logn)になる
 
-vector<int> rnk;
+int n, k;
+vector<int> rnk, tmp;
+
+bool compare_sa(int i, int j) {
+    if (rnk[i] != rnk[j]) return rnk[i] < rnk[j];
+    else {
+        int ri = i + k <= n ? rnk[i + k] : -1;
+        int rj = j + k <= n ? rnk[j + k] : -1;
+        return ri < rj;
+    }
+}
+
+// 文字列Sの接頭辞配列を構築
+void construct_sa(string S, vector<int>& sa) {
+    rnk = tmp = vector<int>(n + 1);
+
+    for (int i = 0; i <= n; i++) {
+        sa[i] = i;
+        rnk[i] = i < n ? S[i] : -1;
+    }
+
+    for (k = 1; k <= n; k *= 2) {
+        sort(sa.begin(), sa.end(), compare_sa);
+
+        tmp[sa[0]] = 0;
+        for (int i = 1; i <= n; i++) {
+            tmp[sa[i]] = tmp[sa[i - 1]] + (compare_sa(sa[i - 1], sa[i]) ? 1 : 0);
+        }
+        for (int i = 0; i <= n; i++) rnk[i] = tmp[i];
+    }
+}
 
 // lcp[i]:=S[sa[i]:]とS[sa[i+1]:]の共通prefix数
 void construct_lcp(string S, vector<int>& sa, vector<int>& lcp) {
-    int n = S.length();
     // rnk[i]:=位置iでのsuffixの順位 (saの逆表現配列)
     rnk = vector<int>(n + 1);
     for (int i = 0; i <= n; i++) rnk[sa[i]] = i;
@@ -41,4 +70,13 @@ void construct_lcp(string S, vector<int>& sa, vector<int>& lcp) {
         }
         lcp[rnk[i] - 1] = h;  // 位置iとその一つ前のrankのsuffixとの比較をしたので、位置iのrankの-1のlcpを計算したことになる
     }
+}
+
+int main() {
+    string S;
+    n = S.length();
+    vector<int> sa(n), lcp(n);
+
+    construct_sa(S, sa);
+    construct_lcp(S, sa, lcp);
 }
