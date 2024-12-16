@@ -4,12 +4,18 @@ using namespace std;
 using ll = long long;
 
 // suffix-arrayの利用シーン
-// 文字列検索: O(|T|log|S|)
+// - 文字列検索: O(|T|log|S|)
+// - 辞書順prefix問題
+//   - 元の文字列の反転文字列の最小suffixは、元の文字列の最大prefixになる
 
 // suffix-array vs prefix-array
 // prefix-arrayはほとんど使われない。saとpaは互いに簡単に変換可能でありどちらか一方のみで十分
 // paなら終了位置を保持することなり操作として直感性にかけるためsaが一般に広く使われている
 // <= 元の文字列を反転してsuffix-arrayを考え戻せばprefixの最大,最小を考えたことになる
+
+// 2倍拡張を使うシーン
+// - 循環を扱いたい場合(時刻など)
+// - 区間個別の反転操作をまとめて扱いたい場合
 
 int n, k;
 vector<int> rnk, tmp;
@@ -72,7 +78,10 @@ int main() {
     // 2つ目の区間を決める
     int p2;
     for (int i = 0; i <= m * 2; i++) {
-        p2 = p1 + m - sa[i];
+        // sa[i]は逆順の2倍拡張配列のindexより、
+        // sa[i]が前半の場合: 前半区間の末尾からの距離が元配列の先頭からの距離になるので m-sa[i]
+        // sa[i]が後半の場合: 考慮しない(m-sa[i]<0よりif条件で必ず弾かれる)
+        p2 = p1 + (m - sa[i]);
         if (p2 - p1 >= 1 && N - p2 >= 1) break;
     }
 
