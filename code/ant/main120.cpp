@@ -51,3 +51,12 @@ int mod_fact(int n, int p, int& e) {
     if (n / p % 2 != 0) return res * (p - fact[n % p]) % p;
     return res * fact[n % p] % p;
 }
+
+// nCk mod pを求める: O(log_p n)
+int mod_comb(int n, int k, int p) {
+    if (n < 0 || k < 0 || n < k) return 0;
+    int e1, e2, e3;
+    int a1 = mod_fact(n, p, e1), a2 = mod_fact(k, p, e2), a3 = mod_fact(n - k, p, e3);
+    if (e1 > e2 + e3) return 0;
+    return a1 * mod_inverse(a2 * a3 % p, p) % p;
+}

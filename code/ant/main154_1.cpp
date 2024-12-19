@@ -3,6 +3,8 @@
 using namespace std;
 using ll = long long;
 
+// 全探索する方法: O(H+W/3 ^2)
+
 const int MOD = 10007;
 int H, W, R, ans = 0;
 vector<int> h, w;  // 石の位置
