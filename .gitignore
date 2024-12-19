@@ -4,4 +4,5 @@ main
 
 atcoder
 in*.txt
+out*.txt
 stash.cpp
