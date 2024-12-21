@@ -7,7 +7,6 @@ struct Edge {
 };
 
 const int INF = 1e8;  // 重みの最大値
-int V;
 vector<vector<Edge>> G;
 vector<bool> used;
 
@@ -36,8 +35,6 @@ int dfs(int v, int t, int f) {
 }
 
 int max_flow(int s, int t) {
-    used = vector<bool>(V);
-
     int res = 0;
     while (1) {
         fill(used.begin(), used.end(), false);
@@ -50,8 +47,8 @@ int max_flow(int s, int t) {
 
 int main() {
     int n, m, s, t; cin >> n >> m >> s >> t;
-    V = n + 2;
-    G = vector<vector<Edge>>(V);
+    G = vector<vector<Edge>>(n + 2);
+    used = vector<bool>(n + 2);
     for (int i = 0; i < m; i++) {
         int x, y, c; cin >> x >> y >> c;
         add_edge(x, y, c);
