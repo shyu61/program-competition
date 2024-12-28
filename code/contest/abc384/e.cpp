@@ -3,6 +3,14 @@ using namespace std;
 using ull = unsigned long long;
 using ll = long long;
 
+// priority_queueとsetの計算量
+// - priority_queue
+//   - insert,delete: O(logN), ただしsetより定数倍高速
+//   - init: O(N)
+// - set
+//   - insert,delete: O(logN)
+//   - init: O(Nlogn)
+
 struct Point {
     int x, y;
     ll s;
