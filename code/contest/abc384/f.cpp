@@ -2,9 +2,16 @@
 using namespace std;
 using ll = long long;
 
-// f(x)は因数が絡むので数論の問題
-// -> ある関数f(x)の合計などを計算する問題。大抵は、そもそも全てのxを入力する時間すらないケースが多い(f(x)をO(1)で計算できたとしても間に合わない)
-// -> 同じ値を取るf(x)などをまとめて計算する必要がある
+// ポイント
+// - 全てのペアに対する操作を伴う問題のパターンは以下の2つ
+//   - そもそもペアの生成が間に合わない
+//     - 対称なものをまとめて計算する
+//     - 剰余が絡むなら余りで分類すると良い
+//     - ペアの剰余は移項により独立に計算できる(事前計算により高速化ができる)
+//   - f(x)の計算が間に合わない
+// - a^bの剰余は「少なくともaでb回割れる」のであって「ちょうどaでb回割れる」わけではない
+//   - つまりちょうどを求めたいなら累積和と同様引き算をする必要がある
+//   - 逆に言えば累乗の剰余を考えるときは「ちょうど」を直接実装せず、剰余を使って間接的に求めるのが良い
 
 // mapとunordered_map
 // - 内部実装は全然違うし速度も全然違う
@@ -22,16 +29,18 @@ int main() {
     vector<int> A(N);
     for (int i = 0; i < N; i++) cin >> A[i];
 
-    vector<ll> d(K + 1);
+    vector<ll> d(K + 1);  // dk := Ai+Aj が2^kの倍数であるものの総和
     for (int k = 0; k < K; k++) {
-        int kk = 1 << k;
+        int k2 = 1 << k;
         unordered_map<int, pair<int, ll>> s;
-        for (auto aj : A) {
-            int i = (-aj % kk + kk) % kk;
+        for (auto ai : A) {
+            // 剰余ごとに分類する
+            int r = (-ai % k2 + k2) % k2;
+            s[r].first++;
+            s[r].second += ai;
 
-            s[i].first++;
-            s[i].second += aj;
-            d[k] += ll(s[aj % kk].first) * aj + s[aj % kk].second;
+            // 現在のajにおいて、考慮して良いaiはi<=jの範囲のみ
+            d[k] += ll(s[ai % k2].first) * ai + s[ai % k2].second;
         }
     }
 
