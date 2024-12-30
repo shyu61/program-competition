@@ -3,6 +3,10 @@ using namespace std;
 using ull = unsigned long long;
 using ll = long long;
 
+// priority_queueについて
+// - デフォルトではmax-heapなので降順(優先度が"高い")
+// - sortなどもそうだが、比較は基本lessで行われるので、`<`をオーバーライドする
+
 // priority_queueとsetの計算量
 // - priority_queue
 //   - insert,delete: O(logN), ただしsetより定数倍高速
