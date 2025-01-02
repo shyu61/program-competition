@@ -7,8 +7,8 @@ using namespace std;
 // セグ木がtop-down的に再帰計算を行い、判定に範囲演算を行い、かつ必要ノードかどうかの判定を行うために使わないノードへのアクセスを行っているのに対して、
 // BITはビット列を使うことで、予めアクセスするノードを知ることができ、オーバーヘッドがある再帰計算を避けつつ高速なビット演算のみで計算できるので、定数倍早い。
 
-template <typename T>
-struct BIT {
+template <typename T=int>
+struct FenwickTree {
     vector<T> bit;
     const T n;
     BIT(T n_) : bit(n_ + 1, 0), n(n_) {};

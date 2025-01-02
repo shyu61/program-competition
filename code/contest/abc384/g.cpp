@@ -55,6 +55,8 @@ atcoder::fenwick_tree<ll> ca, cb, sa, sb;
 void add_a(int i, int sign, int m, ll& now) {
     int ai = cc(A[i]);
     // 差分計算: f(X+1,Y)-f(X,Y) = Σj=1_to_Y |Ax+1-Bj|
+    // {B1,B2,..,By}のうち、Aiより小さいものの個数: cb.sum(0, ai)
+    //                　   Aiより大きいものの個数: cb.sum(ai, m)
     now += (cb.sum(0, ai) * A[i] * sign) - (sb.sum(0, ai) * sign);  // Ax+1>Bj の時
     now -= (cb.sum(ai, m) * A[i] * sign) - (sb.sum(ai, m) * sign);  // Ax+1<Bj の時
     ca.add(ai, sign);
@@ -82,7 +84,7 @@ int main() {
         query[i] = {x, y, i};
     }
 
-    int w = 1000;  // bucket size
+    int w = 1000;  // bucket size: N/wとQ/wが大体同じになるようにwを決める (N/w: バケット数, Q/w: バケットあたりのクエリ数)
     sort(query.begin(), query.end(), [w](const auto& a, const auto& b) {
         // bucket番号
         int ba = get<0>(a) / w;
