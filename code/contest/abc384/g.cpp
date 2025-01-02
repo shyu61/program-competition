@@ -77,11 +77,9 @@ int main() {
     for (int i = 0; i < N; i++) cin >> B[i];
     int Q; cin >> Q;
     vector<tuple<int, int, int>> query(Q);
-    int maxx = 0;
     for (int i = 0; i < Q; i++) {
         int x, y; cin >> x >> y;
         query[i] = {x, y, i};
-        maxx = max(maxx, x);
     }
 
     int w = 1000;  // bucket size
