@@ -66,6 +66,22 @@ void bfs(int v) {
     }
 }
 
-int main() {
-    int n; cin >> n;
+
+// グリッド問題の全探索
+// 左上から順に決定していく
+int H, W;
+vector<vector<int>> color(H, vector<int>(W));
+void dfs(int x, int y) {
+    if (x == H) return;
+
+    int nx = x + (y + 1) / W;
+    int ny = (y + 1) % W;
+
+    // 塗る場合
+    color[nx][ny] = 1;
+    dfs(nx, ny);
+    color[nx][ny] = 0;
+
+    // 塗らない場合
+    dfs(nx, ny);
 }
