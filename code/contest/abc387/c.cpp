@@ -16,6 +16,10 @@ using ll = long long;
 // - 桁dp: 「決めた桁数」と「N未満フラグ」を基本構造とする。後者はつまりi桁目までが全てNと同じかどうか
 //   - N未満フラグがtrueなら、以降の桁は任意の値を取れるし、falseならその桁の数以上の値は取れない
 //   - https://torus711.hatenablog.com/entry/20150423/1429794075
+// - 型変換
+//   - char_to_int: c-'0'
+//   - int_to_string: to_string(i)
+//   - string_to_int: stoi(s)
 
 // n^k
 ll ipow(int n, int k) {
