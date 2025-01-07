@@ -3,40 +3,38 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-const int NMAX = 5e5;
-bool seen[NMAX], finished[NMAX];
 vector<vector<int>> G;
+vector<int> color;
 
-int dfs(int v) {
-    seen[v] = true;
+bool dfs(int v) {
+    color[v] = 1;
     for (auto adj : G[v]) {
-        if (finished[adj]) continue;
-        if (seen[adj] && !finished[adj]) return adj;
-
-        int pos = dfs(adj);
-        if (pos != -1) return pos;
+        if (color[adj] == 2) continue;
+        if (color[adj] == 1){
+            return true;
+        }
+        if (dfs(adj)) return true;
     }
-
-    finished[v] = true;
-    return -1;
+    color[v] = 2;
+    return false;
 }
 
 int main() {
-    int n, m; cin >> n >> m;
-    G = vector<vector<int>>(n);
-    for (int i = 0; i < m; i++) {
+    int N, M; cin >> N >> M;
+    G = vector<vector<int>>(N);
+    color = vector<int>(N);
+    for (int i = 0; i < M; i++) {
         int u, v; cin >> u >> v;
         G[u].push_back(v);
     }
 
-    int pos = -1;
-    for (int i = 0; i < n; i++) {
-        if (seen[i]) continue;
-        pos = dfs(i);
-        if (pos != -1) {
+    for (int i = 0; i < N; i++) {
+        if (color[i] == 2) continue;
+        if (dfs(i)) {
             cout << 1 << endl;
             return 0;
         }
     }
+
     cout << 0 << endl;
 }
