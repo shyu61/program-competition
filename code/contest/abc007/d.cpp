@@ -9,6 +9,8 @@ using ll = long long;
 // 桁問題は、(1)桁dpで解くか(2)n-1桁までの個数+n桁で何番目かに分解して法則性から立式するかの2択
 // 各桁が(ほぼ)独立に扱える場合は(2)、桁同士の依存性が強く法則性を見抜くのが難しい場合は(1)で解く
 
+// https://torus711.hatenablog.com/entry/20150423/1429794075
+
 ll f(ll a) {
     string s = to_string(a);
     int n = s.size();
