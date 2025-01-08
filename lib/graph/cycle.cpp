@@ -1,8 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// 有向グラフも無向グラフも実装はほぼ同じ
-// 復元の必要がない場合は、無向グラフはdsuを使うこともできる
+// | --          | Undirected | Directed | Functional |
+// | Detect      | union-find | dfs      | union-find |
+// | Reconstruct | dfs        | dfs      | union-find |
 
 vector<vector<int>> G;
 vector<int> color, ht;
