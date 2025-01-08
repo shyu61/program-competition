@@ -1,6 +1,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// 有向グラフも無向グラフも実装はほぼ同じ
+// 復元の必要がない場合は、無向グラフはdsuを使うこともできる
+
 vector<vector<int>> G;
 vector<int> color, ht;
 
@@ -45,5 +48,33 @@ int main() {
     else {
         vector<int> cyc = reconstruct(pos);
         for (auto v : cyc) cout << v << endl;
+    }
+}
+
+namespace dsu_cycle_detection {
+    #include <lib/union_find.cpp>
+
+    int main() {
+        int N, M; cin >> N >> M;
+        vector<vector<int>> G(N);
+        for (int i = 0; i < M; i++) {
+            int u, v; cin >> u >> v;
+            G[u].push_back(v);
+            G[v].push_back(u);
+        }
+
+        vector<bool> seen(N);
+        UnionFind uf(N);
+        for (int i = 0; i < N; i++) {
+            seen[i] = true;
+            for (auto v : G[i]) {
+                if (seen[v]) continue;
+                if (!uf.unite(i, v)) {
+                    cout << 1 << endl;
+                    return 0;
+                }
+                seen[v] = true;
+            }
+        }
     }
 }
