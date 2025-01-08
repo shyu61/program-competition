@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-using P = pair<int, int>;
 
 vector<vector<int>> G;
 vector<int> color, ht;
