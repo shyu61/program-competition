@@ -9,6 +9,7 @@ if [ $target = 'contest' ]; then
     [ ! -d ./code/contest/${con} ] && mkdir ./code/contest/${con}
     mv main.cpp ./code/contest/${con}/${3}.cpp
     cp base.cpp main.cpp
+    sed -i '' '/atcoder/d' main.cpp
     rm -f main
     exit 0
 fi
@@ -19,4 +20,5 @@ filename=$(printf "%03d" ${new_number})
 
 mv main.cpp ./code/${target}/${filename}.cpp
 cp base.cpp main.cpp
+sed -i '' '/atcoder/d' main.cpp
 rm -f main
