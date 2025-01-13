@@ -8,24 +8,20 @@ using namespace std;
 // 組合せ最適化問題なので、全探索,貪欲,dp,グラフ,判定問題を検討していく
 // 判定が簡単にできることがわかるので、二分探索+貪欲判定で解くだけ
 
-int N;
-vector<int> A;
-
-bool check(int k) {
-    bool ok = true;
-    for (int i = 0; i < k; i++) {
-        if (A[i] * 2 > A[N - k + i]) {
-            ok = false;
-            break;
-        }
-    }
-    return ok;
-}
-
 int main() {
-    cin >> N;
-    A = vector<int>(N);
+    int N; cin >> N;
+    vector<int> A(N);
     for (int i = 0; i < N; i++) cin >> A[i];
+
+    auto check = [&](int k) -> bool {
+        bool ok = true;
+        for (int i = 0; i < k; i++) {
+            if (A[i] * 2 > A[N - k + i]) {
+                ok = false;
+                break;
+            }
+        }
+    };
 
     int lb = 0, ub = N / 2 + 1;
     while (ub - lb > 1) {
