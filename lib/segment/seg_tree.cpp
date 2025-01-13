@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// op: 区間merge関数, iv: 初期値
 template<auto op, int iv>
 struct Segtree {
     vector<int> dat;
