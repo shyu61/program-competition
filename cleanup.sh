@@ -14,9 +14,13 @@ if [ $target = 'contest' ]; then
     exit 0
 fi
 
-last_num=$(find ./code/${target} -type f -name '*.cpp' | sed -E 's/.*([0-9]*)\.cpp/\1/' | sort -n | tail -1)
+last_num=$(find ./code/${target} -type f -name '*.cpp' | sed -E 's/.*\/([0-9]+)\.cpp/\1/' | sort -n | tail -1)
 new_number=$((10#$last_num+1))
 filename=$(printf "%03d" ${new_number})
+
+echo $target
+echo $last_num
+echo $filename
 
 mv main.cpp ./code/${target}/${filename}.cpp
 cp base.cpp main.cpp
