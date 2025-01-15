@@ -1,4 +1,5 @@
 // https://atcoder.jp/contests/dp/tasks/dp_j
+// https://qiita.com/drken/items/03c7db44ccd27820ea0d#j-%E5%95%8F%E9%A1%8C---sushi
 #include <bits/stdc++.h>
 using namespace std;
 
