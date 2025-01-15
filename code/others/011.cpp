@@ -2,6 +2,8 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+// 典型的な確率dp問題
+
 int main() {
     int N; cin >> N;
     vector<double> P(N);
