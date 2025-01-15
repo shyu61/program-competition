@@ -13,4 +13,4 @@ else
     done
 fi
 
-rm -r chunk*.txt
+rm -r chunk*.txt main
