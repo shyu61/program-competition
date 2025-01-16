@@ -3,11 +3,11 @@ using namespace std;
 
 // 区間min/max x RUQ
 namespace segminmax_ruq {
-    template<auto op, int iv>
+    template<typename T, auto op, T iv>
     struct LazySegtree {
     private:
         int n = 1;
-        vector<int> dat, lazy;
+        vector<T> dat, lazy;
         vector<bool> flag;
 
     public:
@@ -15,7 +15,8 @@ namespace segminmax_ruq {
         LazySegtree(const vector<int>& a) {
             int sz = a.size();
             while (n < sz) n *= 2;
-            dat = lazy = vector<int>(n * 2 - 1, iv);
+            dat = vector<T>(n * 2 - 1, iv);
+            lazy = vector<T>(n * 2 - 1);
             flag = vector<bool>(n * 2 - 1);
 
             for (int i = 0; i < sz; i++) dat[i + n - 1] = a[i];
@@ -52,13 +53,13 @@ namespace segminmax_ruq {
             }
         }
 
-        int query(int a, int b, int id = 0, int l = 0, int r = -1) {
+        T query(int a, int b, int id = 0, int l = 0, int r = -1) {
             if (r < 0) r = n;
             eval(id, l, r);
             if (b <= l || r <= a) return iv;
             if (a <= l && r <= b) return dat[id];
-            int vl = query(a, b, id * 2 + 1, l, (l + r) / 2);
-            int vr = query(a, b, id * 2 + 2, (l + r) / 2, r);
+            T vl = query(a, b, id * 2 + 1, l, (l + r) / 2);
+            T vr = query(a, b, id * 2 + 2, (l + r) / 2, r);
             return op(vl, vr);
         }
     };
@@ -66,18 +67,19 @@ namespace segminmax_ruq {
 
 // 区間min/max x RAQ
 namespace segminmax_raq {
-    template<auto op, int iv>
+    template<typename T, auto op, T iv>
     struct LazySegtree {
     private:
         int n = 1;
-        vector<int> dat, lazy;
+        vector<T> dat, lazy;
 
     public:
         LazySegtree() {}
         LazySegtree(const vector<int>& a) {
             int sz = a.size();
             while (n < sz) n *= 2;
-            dat = lazy = vector<int>(n * 2 - 1, iv);
+            dat = vector<T>(n * 2 - 1, iv);
+            lazy = vector<T>(n * 2 - 1);
 
             for (int i = 0; i < sz; i++) dat[i + n - 1] = a[i];
             for (int i = n - 2; i >= 0; i--) {
@@ -112,20 +114,20 @@ namespace segminmax_raq {
             }
         }
 
-        int query(int a, int b, int id = 0, int l = 0, int r = -1) {
+        T query(int a, int b, int id = 0, int l = 0, int r = -1) {
             if (r < 0) r = n;
             eval(id, l, r);
             if (b <= l || r <= a) return iv;
             if (a <= l && r <= b) return dat[id];
-            int vl = query(a, b, id * 2 + 1, l, (l + r) / 2);
-            int vr = query(a, b, id * 2 + 2, (l + r) / 2, r);
+            T vl = query(a, b, id * 2 + 1, l, (l + r) / 2);
+            T vr = query(a, b, id * 2 + 2, (l + r) / 2, r);
             return op(vl, vr);
         }
     };
 }
 
 // 区間和
-namespace segsum {
+namespace segsum_raq {
     template<typename T>
     struct LazySegtree {
     private:
