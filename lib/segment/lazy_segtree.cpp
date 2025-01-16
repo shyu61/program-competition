@@ -37,7 +37,8 @@ namespace segminmax_ruq {
         }
 
         // [a,b)の値を全てxに変更
-        void update(int a, int b, int x, int id = 0, int l = 0, int r = n) {
+        void update(int a, int b, int x, int id = 0, int l = 0, int r = -1) {
+            if (r < 0) r = n;
             eval(id, l, r);
             if (b <= l || r <= a) return;
             if (a <= l && r <= b) {
@@ -51,7 +52,8 @@ namespace segminmax_ruq {
             }
         }
 
-        int query(int a, int b, int id = 0, int l = 0, int r = n) {
+        int query(int a, int b, int id = 0, int l = 0, int r = -1) {
+            if (r < 0) r = n;
             eval(id, l, r);
             if (b <= l || r <= a) return iv;
             if (a <= l && r <= b) return dat[id];
@@ -96,7 +98,8 @@ namespace segminmax_raq {
         }
 
         // [a,b)の値を全てxに変更
-        void add(int a, int b, int x, int id = 0, int l = 0, int r = n) {
+        void add(int a, int b, int x, int id = 0, int l = 0, int r = -1) {
+            if (r < 0) r = n;
             eval(id, l, r);
             if (b <= l || r <= a) return;
             if (a <= l && r <= b) {
@@ -109,7 +112,8 @@ namespace segminmax_raq {
             }
         }
 
-        int query(int a, int b, int id = 0, int l = 0, int r = n) {
+        int query(int a, int b, int id = 0, int l = 0, int r = -1) {
+            if (r < 0) r = n;
             eval(id, l, r);
             if (b <= l || r <= a) return iv;
             if (a <= l && r <= b) return dat[id];
@@ -122,7 +126,6 @@ namespace segminmax_raq {
 
 // 区間和
 namespace segsum {
-    template<auto op, int iv>
     struct LazySegtree {
     private:
         int n = 1;
@@ -143,7 +146,7 @@ namespace segsum {
 
         // [l,r)に対して遅延していた評価を実行
         void eval(int id, int l, int r) {
-            if (lazy[id] ! = 0) {
+            if (lazy[id] != 0) {
                 dat[id] += lazy[id];
                 if (r - l > 1) {
                     lazy[id * 2 + 1] += lazy[id] / 2;
@@ -154,7 +157,8 @@ namespace segsum {
         }
 
         // [a,b)に対して+x
-        void add(int a, int b, int x, int id = 0, int l = 0, int r = n) {
+        void add(int a, int b, int x, int id = 0, int l = 0, int r = -1) {
+            if (r < 0) r = n;
             eval(id, l, r);
             if (b <= l || r <= a) return;
             if (a <= l && r <= b) {
@@ -167,7 +171,8 @@ namespace segsum {
             }
         }
 
-        int query(int a, int b, int id = 0, int l = 0, int r = n) {
+        int query(int a, int b, int id = 0, int l = 0, int r = -1) {
+            if (r < 0) r = n;
             eval(id, l, r);
             if (b <= l || r <= a) return 0;
             if (a <= l && r <= b) return dat[id];

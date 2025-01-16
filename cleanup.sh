@@ -18,10 +18,6 @@ last_num=$(find ./code/${target} -type f -name '*.cpp' | sed -E 's/.*\/([0-9]+)\
 new_number=$((10#$last_num+1))
 filename=$(printf "%03d" ${new_number})
 
-echo $target
-echo $last_num
-echo $filename
-
 mv main.cpp ./code/${target}/${filename}.cpp
 cp base.cpp main.cpp
 sed -i '' '/atcoder/d' main.cpp
