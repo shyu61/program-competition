@@ -82,8 +82,8 @@ int main() {
     }
     sort(h.begin(), h.end(), greater<>());
 
-    vector<int> ans(N), _a(W);
-    LazySegtree<int, op, 0> rmq(_a);
+    vector<int> ans(N);
+    LazySegtree<int, op, 0> rmq(vector<int>(W, 0));
     for (auto [r, c, l, i] : h) {
         ans[i] = rmq.query(c, c + l);
         rmq.update(c, c + l, ans[i] + 1);
