@@ -2,6 +2,33 @@
 using namespace std;
 using ll = long long;
 
+// https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DPL_1_G&lang=ja
+// 個数制限付きナップサック
+// ダブリングを使う方法: O(nWlogm)
+// ダブリングは組合せ最適化(塊で扱う)や逐次問題(一気に進める)で利用シーンがある
+// ただし組み合わせ最適化においては各要素が独立に選択可能であることが条件
+int main() {
+    int n, W; cin >> n >> W;
+    vector<int> v(n), w(n), m(n);
+    for (int i = 0; i < n; i++) cin >> v[i] >> w[i] >> m[i];
+
+    vector<int> dp(W + 1);
+    for (int i = 0; i < n; i++) {
+        int sum = 0;
+        for (int k = 1; sum <= m[i]; k <<= 1) {
+            int mul = min(m[i] - sum, k);
+            vector<int> old(W + 1);
+            swap(dp, old);
+            for (int j = 0; j <= W; j++) {
+                if (j - w[i] * mul >= 0) dp[j] = max(old[j], old[j - w[i] * mul] + v[i] * mul);
+                else dp[j] = old[j];
+            }
+            sum += k;
+        }
+    }
+    cout << dp[W] << endl;
+}
+
 // https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DPL_1_H&lang=ja
 // 巨大ナップサック: v,w共に大きい場合は、nが小さいことを条件にnのみに依存して計算することができる O(n2^(n/2))
 // 半分全列挙を使う
