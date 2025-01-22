@@ -29,6 +29,39 @@ int main() {
     cout << dp[W] << endl;
 }
 
+// https://scrapbox.io/nojima/%E5%80%8B%E6%95%B0%E5%88%B6%E9%99%90%E4%BB%98%E3%81%8D%E3%83%8A%E3%83%83%E3%83%97%E3%82%B5%E3%83%83%E3%82%AF
+// スライド最大化を使った解法
+// 考え方
+// naiveな遷移式は dp[i+1][j]:=max{dp[i][j-k*wi]+k*vi | 0<=k<=mi}
+// -> [j-k*wi]はつまりwiで周期的であり、同じwiについては剰余が常に等しくなる
+// -> jに遷移するものは同じ剰余のものなので、剰余(0<=r<wi)でグループ化して考える
+// -> 剰余が同じだと
+int main() {
+    int n, W; cin >> n >> W;
+    vector<int> v(n), w(n), m(n);
+    for (int i = 0; i < n; i++) cin >> v[i] >> w[i] >> m[i];
+
+    vector<int> dp(W + 1);
+    for (int i = 0; i < n; i++) {
+        // 剰余でグループ化
+        vector<int> old(W + 1);
+        swap(dp, old);
+        for (int r = 0; r < w[i]; r++) {
+            deque<pair<int, int>> deq;
+            // 個数でループ
+            for (int j = 0; j * w[i] + r <= W; j++) {
+                int val = old[j * w[i] + r] - j * v[i];
+                while (!deq.empty() && deq.back().first <= val) deq.pop_back();
+                deq.emplace_back(val, j);
+
+                dp[j * w[i] + r] = deq.front().first + j * v[i];
+                if (deq.front().second == j - m[i]) deq.pop_front();
+            }
+        }
+    }
+    cout << dp[W] << endl;
+}
+
 // https://judge.u-aizu.ac.jp/onlinejudge/description.jsp?id=DPL_1_H&lang=ja
 // 巨大ナップサック: v,w共に大きい場合は、nが小さいことを条件にnのみに依存して計算することができる O(n2^(n/2))
 // 半分全列挙を使う
