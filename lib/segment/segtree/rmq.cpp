@@ -11,7 +11,7 @@ private:
 public:
     Segtree() {}
     Segtree(const vector<int>& a) {
-        int sz = a.aize();
+        int sz = a.size();
         while (n < sz) n *= 2;
         dat = vector<int>(n * 2 - 1, iv);
 
@@ -21,7 +21,8 @@ public:
         }
     }
 
-    int query(int a, int b, int id = 0, int l = 0, int r = n) {
+    int query(int a, int b, int id = 0, int l = 0, int r = -1) {
+        if (r < 0) r = n;
         if (b <= l || r <= a) return iv;
         if (a <= l && r <= b) return dat[id];
         else {
@@ -39,5 +40,25 @@ public:
             id = (id - 1) / 2;
             dat[id] = op(dat[id * 2 + 1], dat[id * 2 + 2]);
         }
+    }
+
+    // x以上(以下)となる最初の点
+    int lower_bound(T x, int id = 0, int l = 0, int r = -1) {
+        if (l == r) return l;
+        if (r < 0) r = n;
+        if (dat[id] != x && op(dat[id], x) == x) return -1;
+        T vl = lower_bound(x, id * 2 + 1, l, (l + r) / 2);
+        if (vl != -1) return vl;
+        return lower_bound(x, id * 2 + 2, (l + r) / 2, r);
+    }
+
+    // xより大きく(小さく)なる最初の点
+    int upper_bound(T x, int id = 0, int l = 0, int r = -1) {
+        if (l == r) return l;
+        if (r < 0) r = n;
+        if (dat[id] == x || op(dat[id], x) == x) return -1;
+        T vr = upper_bound(x, id * 2 + 2, (l + r) / 2, r);
+        if (vr != -1) return vr;
+        return upper_bound(x, id * 2 + 1, l, (l + r) / 2);
     }
 };
