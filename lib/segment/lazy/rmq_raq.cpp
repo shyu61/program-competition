@@ -58,4 +58,26 @@ public:
         T vr = query(a, b, id * 2 + 2, (l + r) / 2, r);
         return op(vl, vr);
     }
+
+    // x以上(以下)となる最初の点
+    int lower_bound(T x, int id = 0, int l = 0, int r = -1) {
+        if (l == r) return l;
+        if (r < 0) r = n;
+        eval(id, l, r);
+        if (dat[id] != x && op(dat[id], x) == x) return -1;
+        T vl = lower_bound(x, id * 2 + 1, l, (l + r) / 2);
+        if (vl != -1) return vl;
+        return lower_bound(x, id * 2 + 2, (l + r) / 2, r);
+    }
+
+    // xより大きく(小さく)なる最初の点
+    int upper_bound(T x, int id = 0, int l = 0, int r = -1) {
+        if (l == r) return l;
+        if (r < 0) r = n;
+        eval(id, l, r);
+        if (dat[id] == x || op(dat[id], x) == x) return -1;
+        T vr = upper_bound(x, id * 2 + 2, (l + r) / 2, r);
+        if (vr != -1) return vr;
+        return upper_bound(x, id * 2 + 1, l, (l + r) / 2);
+    }
 };
