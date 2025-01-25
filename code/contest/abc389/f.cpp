@@ -4,6 +4,12 @@ using namespace std;
 // ジャンル
 // 逐次問題, 区間問題, クエリ問題
 
+// 方針
+// クエリ問題の方針は以下の2つ
+// - オンライン高速化: 各クエリの処理を事前計算により高速化
+// - オフライン高速化: クエリをソートなりして順番に処理することで累積構造などを使った高速化を図る
+// 累積構造が使えなさそうなのでオンライン高速化を考える。
+
 template<typename T, auto op, T iv>
 struct LazySegtree {
 private:
@@ -60,6 +66,28 @@ public:
         T vr = query(a, b, id * 2 + 2, (l + r) / 2, r);
         return op(vl, vr);
     }
+
+    // x以上(以下)となる最初の点
+    int lower_bound(T x, int id = 0, int l = 0, int r = -1) {
+        if (l == r) return l;
+        if (r < 0) r = n;
+        eval(id, l, r);
+        if (dat[id] != x && op(dat[id], x) == x) return -1;
+        T vl = lower_bound(x, id * 2 + 1, l, (l + r) / 2);
+        if (vl != -1) return vl;
+        return lower_bound(x, id * 2 + 2, (l + r) / 2, r);
+    }
+
+    // xより大きく(小さく)なる最初の点
+    int upper_bound(T x, int id = 0, int l = 0, int r = -1) {
+        if (l == r) return l;
+        if (r < 0) r = n;
+        eval(id, l, r);
+        if (dat[id] == x || op(dat[id], x) == x) return -1;
+        T vr = upper_bound(x, id * 2 + 2, (l + r) / 2, r);
+        if (vr != -1) return vr;
+        return upper_bound(x, id * 2 + 1, l, (l + r) / 2);
+    }
 };
 
 int op(int a, int b) { return max(a, b); }
@@ -89,6 +117,32 @@ int main() {
 
     for (int i = 0; i < n; i++) {
         seg.add(lwb(l[i]), lwb(r[i]), 1);
+    }
+
+    int q; cin >> q;
+    while (q--) {
+        int x; cin >> x;
+        cout << seg.query(x, x + 1) << '\n';
+    }
+}
+
+// segtree上で二分探索を行う場合
+int main() {
+    int n; cin >> n;
+    vector<int> l(n), r(n);
+    for (int i = 0; i < n; i++) {
+        cin >> l[i] >> r[i];
+        r[i]++;
+    }
+
+    const int XMAX = 5e5 + 1;
+    vector<int> a(XMAX + 1);
+    for (int i = 0; i <= XMAX; i++) a[i] = i;
+    LazySegtree<int, op, 0> seg(a);
+
+    for (int i = 0; i < n; i++) {
+        int li = seg.lower_bound(l[i]), ri = seg.lower_bound(r[i]);
+        seg.add(li, ri, 1);
     }
 
     int q; cin >> q;
