@@ -151,3 +151,36 @@ int main() {
         cout << seg.query(x, x + 1) << '\n';
     }
 }
+
+// 全てのXではなくQに存在する値のみでsegtreeを構築する解法
+int main() {
+    int n; cin >> n;
+    vector<int> l(n), r(n);
+    for (int i = 0; i < n; i++) {
+        cin >> l[i] >> r[i];
+        r[i]++;
+    }
+
+    int q; cin >> q;
+    vector<pair<int, int>> qs(q);
+    for (int i = 0; i < q; i++) {
+        int x; cin >> x;
+        qs[i] = {x, i};
+    }
+    sort(qs.begin(), qs.end());
+
+    vector<int> a(q);
+    for (int i = 0; i < q; i++) a[i] = qs[i].first;
+    LazySegtree<int, op, 0> seg(a);
+
+    for (int i = 0; i < n; i++) {
+        int li = seg.lower_bound(l[i]), ri = seg.lower_bound(r[i]);
+        seg.add(li, ri, 1);
+    }
+
+    vector<int> ans(q);
+    for (int i = 0; i < q; i++) {
+        ans[qs[i].second] = seg.query(i, i + 1);
+    }
+    for (auto v : ans) cout << v << '\n';
+}
