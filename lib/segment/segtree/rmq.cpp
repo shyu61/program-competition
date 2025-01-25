@@ -46,9 +46,9 @@ public:
     int lower_bound(T x, int id = 0, int l = 0, int r = -1) {
         if (l == r) return l;
         if (r < 0) r = n;
-        if (dat[id] != x && op(dat[id], x) == x) return -1;
+        if (dat[id] != x && op(dat[id], x) == x) return n;
         T vl = lower_bound(x, id * 2 + 1, l, (l + r) / 2);
-        if (vl != -1) return vl;
+        if (vl != n) return vl;
         return lower_bound(x, id * 2 + 2, (l + r) / 2, r);
     }
 
@@ -56,9 +56,9 @@ public:
     int upper_bound(T x, int id = 0, int l = 0, int r = -1) {
         if (l == r) return l;
         if (r < 0) r = n;
-        if (dat[id] == x || op(dat[id], x) == x) return -1;
+        if (dat[id] == x || op(dat[id], x) == x) return n;
         T vr = upper_bound(x, id * 2 + 2, (l + r) / 2, r);
-        if (vr != -1) return vr;
+        if (vr != n) return vr;
         return upper_bound(x, id * 2 + 1, l, (l + r) / 2);
     }
 };
