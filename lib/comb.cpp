@@ -7,46 +7,114 @@ int main() {
     for (int i = 0; i < n; i++) cin >> a[i];
 
     // nCk
-    vector<vector<int>> out;
-    auto comb = [&](auto comb, int k, vector<int>& cur, int s) -> void {
-        if (cur.size() == k) {
-            out.push_back(cur);
-            return;
-        }
-        for (int i = s; i <= n; i++) {
-            cur.push_back(a[i]);
-            comb(comb, k, cur, i + 1);
-            cur.pop_back();
-        }
-    };
+    {
+        vector<int> xs;
+        auto comb = [&](auto comb, int k, int s) -> void {
+            if (xs.size() == k) {
+                for (auto v : xs) cout << v << ' ';
+                cout << '\n';
+                return;
+            }
+            for (int i = s; i < n; i++) {
+                xs.push_back(a[i]);
+                comb(comb, k, i + 1);
+                xs.pop_back();
+            }
+        };
+    }
 
     // nPk
-    vector<vector<int>> out2;
-    auto perm = [&](int k, vector<int>& cur, int s) -> void {
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (i == j) continue;
-                out2.emplace_back(a[i], a[j]);
+    {
+        vector<int> xs;
+        vector<bool> used(n);
+        auto perm = [&](auto perm, int k) -> void {
+            if (xs.size() == k) {
+                for (auto v : xs) cout << v << ' ';
+                cout << '\n';
+                return;
             }
-        }
-    };
+            for (int i = 0; i < n; i++) {
+                if (used[i]) continue;
+                used[i] = true;
+                xs.push_back(a[i]);
+                perm(perm, k);
+                xs.pop_back();
+                used[i] = false;
+            }
+        };
+    }
 
-    // bell
-    vector<vector<vector<int>>> out3;
-    auto bell = [&](auto bell, int cur, vector<vector<int>>& pt) -> void {
-        if (cur == n) {
-            out3.push_back(pt);
-            return;
-        }
+    // nPn
+    {
+        auto perm2 = [&]() -> void {
+            do {
+                for (auto ai : a) cout << ai << ' ';
+                cout << '\n';
+            } while (next_permutation(a.begin(), a.end()));
+        };
+    }
 
-        for (int i = 0; i < pt.size(); i++) {
-            pt[i].push_back(a[cur]);
-            bell(bell, cur + 1, pt);
-            pt[i].pop_back();
-        }
+    // pertition(bell)
+    // ベル数: n個以下の非空集合に分割する。n個全てを選び切るまでcombを繰り返し実行する行為と同じで、combの拡張とみなせる
+    // 集合全体をグループ分けしたい場合に有用
+    {
+        auto print = [&](const vector<vector<int>>& vs) -> void {
+            for (auto sub : vs) {
+                int m = sub.size();
+                cout << '{';
+                for (int i = 0; i < m; i++) {
+                    cout << sub[i] << (i == m - 1 ? '}' : ',');
+                }
+            }
+            cout << '\n';
+        };
 
-        pt.push_back(vector<int>{a[cur]});
-        bell(bell, cur + 1, pt);
-        pt.pop_back();
-    };
+        vector<vector<int>> xs;
+        auto dfs = [&](auto dfs, int s) -> void {
+            if (s == n) {
+                print(xs);
+                return;
+            }
+            for (int i = 0; i < xs.size(); i++) {
+                xs[i].push_back(a[s]);
+                dfs(dfs, s + 1);
+                xs[i].pop_back();
+            }
+            xs.push_back(vector<int>{a[s]});
+            dfs(dfs, s + 1);
+            xs.pop_back();
+        };
+    }
+
+    // pertition(starling)
+    // スターリング数: 丁度k個の非空集合に分割する
+    {
+        auto print = [&](const vector<vector<int>>& vs) -> void {
+            for (auto sub : vs) {
+                int m = sub.size();
+                cout << '{';
+                for (int i = 0; i < m; i++) {
+                    cout << sub[i] << (i == m - 1 ? '}' : ',');
+                }
+            }
+            cout << '\n';
+        };
+
+        vector<vector<int>> xs;
+        auto dfs = [&](auto dfs, int k, int s) -> void {
+            if (xs.size() > k) return;
+            if (s == n) {
+                if (xs.size() == k) print(xs);
+                return;
+            }
+            for (int i = 0; i < xs.size(); i++) {
+                xs[i].push_back(a[s]);
+                dfs(dfs, k, s + 1);
+                xs[i].pop_back();
+            }
+            xs.push_back(vector<int>{a[s]});
+            dfs(dfs, k, s + 1);
+            xs.pop_back();
+        };
+    }
 }
