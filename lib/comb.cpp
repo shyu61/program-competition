@@ -88,6 +88,11 @@ int main() {
 
     // pertition(starling)
     // スターリング数: 丁度k個の非空集合に分割する
+    // 包除原理を使って証明ができる
+    // - 空集合を許容する場合、丁度k個に分割するパターンはk^n
+    // - この内、少なくとも1つは空集合であるものを引けばよく、包除原理を使うと丁度1つが空集合, 丁度2つが空集合...となる。
+    // - 丁度i個が非空集合とすると、i個のいずれかに割り当てれば良いので、kCi * i^n
+    // -> https://manabitimes.jp/math/892
     {
         auto print = [&](const vector<vector<int>>& vs) -> void {
             for (auto sub : vs) {
