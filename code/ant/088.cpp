@@ -1,45 +1,37 @@
 // ビットDP(巡回セールスマン問題): p173
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
 
-// bitDPはメモ化再帰の方が考えやすい
-// 特に"遷移の方向"を意識すると良い
+// ポイント
+// bitDPはメモ化再帰が考えやすい
 
-struct Edge {
-    int to; int w;
-    Edge(int to, int w) : to(to), w(w) {};
-};
-
-const int INF = 15001;
-int n;
-vector<vector<Edge>> G;
-vector<vector<int>> dp;
-
-int f(int S, int v) {
-    if (dp[S][v] >= 0) return dp[S][v];
-    if (S == (1 << n) - 1 && v == 0) return dp[S][v] = 0;
-
-    int res = INF;
-    for (auto [u, w] : G[v]) {
-        if (!(S >> u & 1)) {
-            res = min(res, f(S | 1 << u, u) + w);
-        }
-    }
-    return dp[S][v] = res;
-}
+struct Edge { int to, cost; };
 
 int main() {
-    int m; cin >> n >> m;
-    G = vector<vector<Edge>>(n);
+    int n, m; cin >> n >> m;
+    vector<vector<Edge>> g(n);
     for (int i = 0; i < m; i++) {
-        int from, to, w; cin >> from >> to >> w;
-        G[from].emplace_back(to, w);
+        int s, t, d; cin >> s >> t >> d;
+        g[s].push_back(Edge{t, d});
     }
 
-    // dp[S][v]: 訪問済みの頂点集合S, 現在の頂点vの状態で残りの頂点全てを訪問して0に帰ってくる最小値
-    dp = vector<vector<int>>(1 << n, vector<int>(n, -1));
-    f(0, 0);
+    // dp[s][i]:=訪問済み頂点集合sかつ、現在頂点iの状態から残りの全頂点を訪問する最小コスト
+    int n2 = 1 << n;
+    const int INF = 1000 * m + 1;
+    vector<vector<int>> dp(n2, vector<int>(n, -1));
 
-    cout << dp[0][0] << endl;
+    auto rec = [&](auto rec, int s, int v) -> int {
+        if (dp[s][v] >= 0) return dp[s][v];
+        if (s == n2 - 1 && v == 0) return dp[s][v] = 0;  // 終了条件
+
+        int res = INF;
+        for (auto [u, c] : g[v]) {
+            if (s >> u & 1) continue;
+            res = min(res, rec(rec, s | 1 << u, u) + c);
+        }
+        return dp[s][v] = res;
+    };
+
+    rec(rec, 0, 0);
+    cout << (dp[0][0] == INF ? -1 : dp[0][0]) << endl;
 }
