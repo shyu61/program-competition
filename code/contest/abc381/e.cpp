@@ -16,21 +16,21 @@ using namespace std;
 
 int main() {
     int n, q; string s; cin >> n >> q >> s;
-    vector<vector<int>> pos(3);
+    vector<vector<int>> is(3);
     for (int i = 0; i < n; i++) {
-        if (s[i] == '1') pos[0].push_back(i);
-        if (s[i] == '/') pos[1].push_back(i);
-        if (s[i] == '2') pos[2].push_back(i);
+        if (s[i] == '1') is[0].push_back(i);
+        if (s[i] == '/') is[1].push_back(i);
+        if (s[i] == '2') is[2].push_back(i);
     }
 
     const int INF = 1e5 + 10;
-    auto get_next = [&](int c, int si, int d) -> int {
-        if (d == 0) return si;
-        vector<int>& a = pos[c];
-        int p = lower_bound(a.begin(), a.end(), si) - a.begin();
+    // 位置iから値cをd個取る時のd個目の最小の位置を返却
+    auto get_next = [&](int c, int i, int d) -> int {
+        if (d == 0) return i;
+        int p = lower_bound(is[c].begin(), is[c].end(), i) - is[c].begin();
         p += d - 1;
-        if (p >= a.size()) return INF;
-        return a[p] + 1;
+        if (p >= is[c].size()) return INF;
+        return is[c][p] + 1;
     };
 
     // [l,r)で1,2がm個ずつのsubseqを作れるか判定

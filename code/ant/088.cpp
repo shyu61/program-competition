@@ -3,7 +3,8 @@
 using namespace std;
 
 // ポイント
-// bitDPはメモ化再帰が考えやすい
+// 遷移が飛び地になる場合はメモ化再帰が良い
+// bitDPは飛び地になることが多い
 
 struct Edge { int to, cost; };
 
