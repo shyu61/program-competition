@@ -1,7 +1,6 @@
 // バケット法と平方分割: p168
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
 
 // バケット法: 分割した区間の代表値を使って計算量を落とすという設計は、セグ木と同じ。ただし、区間幅が一定でセグ木より実装がシンプル
 
@@ -25,56 +24,48 @@ using ll = long long;
 // 抽象化
 // 最大/最小に加えて、kth-numberも境界判定問題に帰着できる。というか最大/最小は、first-number,last-numberなのでkth-numberの特殊ケースと考えても良いかもしれない。
 
-// テクニック
-// 区間を左から見ていく時、ポインターを動かしつつ処理するとシンプルに書ける
-
 int main() {
     int n, m; cin >> n >> m;
     vector<int> a(n);
     for (int i = 0; i < n; i++) cin >> a[i];
 
-    int b = sqrt(n);
-    vector<vector<int>> bc(n / b + 1);
+    // バケット法でバケット毎にsort列を用意しておく
+    int n2 = sqrt(n);
+    vector<vector<int>> bk(n / n2 + 1);
     for (int i = 0; i < n; i++) {
-        bc[i / b].push_back(a[i]);
-        if ((i + 1) % b == 0) {
-            sort(bc[i / b].begin(), bc[i / b].end());
+        bk[i / n2].push_back(a[i]);
+        if ((i + 1) % n2 == 0) {
+            sort(bk[i / n2].begin(), bk[i / n2].end());
         }
     }
 
-    vector<int> nums = a;
-    sort(nums.begin(), nums.end());
+    vector<int> sorted = a;
+    sort(sorted.begin(), sorted.end());
 
-    for (int q = 0; q < m; q++) {
-        int l, r, k; cin >> l >> r >> k;
-        r++;
+    while (m--) {
+        int l, r, k; cin >> l >> r >> k; l--;
 
-        // 二分探索を考える時は、lbは常に条件を満たさない、ubは常に条件を満たすようにとる
-        int lb = -1, ub = n - 1;
-        while (ub - lb > 1) {
-            int m = (lb + ub) / 2;
-            int x = nums[m];
-
-            // m以下の個数が丁度k個かどうか判定
+        // 二分探索: mid番目の数以下の数がk個以下か判定
+        int lb = n, ub = -1;
+        while (lb - ub > 1) {
+            int mid = (lb + ub) / 2;
+            int x = sorted[mid];
             int tl = l, tr = r, cnt = 0;
 
-            // 境界のバケットに対する処理
-            // 条件を満たさなくなるまでループを回したい時、終了地点を求めてforで書くよりも、whileで書いてしまう方が簡単でミスが減る
-            while (tl < tr && tl % b != 0) if (a[tl++] <= x) cnt++;
-            while (tl < tr && tr % b != 0) if (a[--tr] <= x) cnt++;
+            // 境界バケットを処理
+            while (tl < tr && tl % n2 != 0) if (a[tl++] <= x) cnt++;
+            while (tl < tr && tr % n2 != 0) if (a[--tr] <= x) cnt++;
 
-            // 完全に含まれるバケットに対する処理
+            // 完全に含まれるバケットを処理
             while (tl < tr) {
-                int t = tl / b;
-                cnt += upper_bound(bc[t].begin(), bc[t].end(), x) - bc[t].begin();
-                tl += b;
+                int i = tl / n2;
+                cnt += upper_bound(bk[i].begin(), bk[i].end(), x) - bk[i].begin();
+                tl += n2;
             }
 
-            // is_ok(m)ならub=m
-            if (cnt >= k) ub = m;
-            else lb = m;
+            // true: 下限を緩和
+            cnt < k ? ub = mid : lb = mid;
         }
-
-        cout << nums[ub] << endl;
+        cout << sorted[lb] << '\n';
     }
 }
