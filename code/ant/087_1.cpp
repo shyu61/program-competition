@@ -21,8 +21,8 @@ using namespace std;
 // セグ木で考える場合
 // 考え方はバケット法と全く同じ。
 
-// 抽象化
-// 最大/最小に加えて、kth-numberも境界判定問題に帰着できる。というか最大/最小は、first-number,last-numberなのでkth-numberの特殊ケースと考えても良いかもしれない。
+// ポイント
+// - kth-numberは非常に扱いにくいため、二分探索を使った判定問題で解けないか考える
 
 int main() {
     int n, m; cin >> n >> m;
