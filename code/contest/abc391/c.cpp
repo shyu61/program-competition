@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define rep(i, n) for (int i = 0; i < (n); i++)
 
 // 方針
 // update: 鳩を探して移動する
@@ -16,7 +17,7 @@ int main() {
     int n, q; cin >> n >> q;
     vector<int> a(n), cnt(n, 1);
     int num = 0;
-    for (int i = 0; i < n; i++) a[i] = i;
+    rep(i, n) a[i] = i;
 
     while (q--) {
         int type; cin >> type;
