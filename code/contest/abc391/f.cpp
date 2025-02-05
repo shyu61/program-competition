@@ -14,11 +14,9 @@ using ll = long long;
 // ほぼ貪欲に考えらそうと思いつく。
 // 3列のうち最大の値を取り出し、取り出した列の次の値を候補とする操作を繰り返せばよく、pqが使える構造になっていることがわかる
 
-// kth-numberは判定問題で考えるとうまくいくケースが多い。つまり、x以下の数が丁度k個になるxを二分探索する
-// 後は、x以下の個数を高速に判定する方法が見つかれば良い。
-
 // ポイント
 // 上限値はヒントの宝庫
+// 全ペア走査は要素間の値が連続なら、格子点走査とみなせる。各格子点へのパスを限定することで計算量を落とせるかも
 
 int main() {
     int n, K; cin >> n >> K;
@@ -43,6 +41,34 @@ int main() {
         auto [val, i, j, k] = pq.top(); pq.pop();
         push(i + 1, j, k);
         push(i, j + 1, k);
+        push(i, j, k + 1);
+    }
+
+    ll ans = get<0>(pq.top());
+    cout << ans << endl;
+}
+
+// 各格子点へのパスを限定することで重複をなくし計算量を落とす
+int main() {
+    int n, K; cin >> n >> K;
+    vector<vector<ll>> a(3, vector<ll>(n));
+    rep(r, 3) {
+        rep(i, n) cin >> a[r][i];
+        sort(a[r].begin(), a[r].end(), greater<>());
+    }
+
+    priority_queue<tuple<ll, int, int, int>> pq;
+    auto push = [&](int i, int j, int k) {
+        if (i >= n || j >= n || k >= n) return;
+        ll val = a[0][i] * a[1][j] + a[1][j] * a[2][k] + a[2][k] * a[0][i];
+        pq.emplace(val, i, j, k);
+    };
+
+    push(0, 0, 0);
+    rep(ki, K - 1) {
+        auto [val, i, j, k] = pq.top(); pq.pop();
+        if (j == 0 && k == 0) push(i + 1, j, k);
+        if (k == 0) push(i, j + 1, k);
         push(i, j, k + 1);
     }
 
