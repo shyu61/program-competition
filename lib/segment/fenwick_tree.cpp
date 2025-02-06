@@ -11,21 +11,29 @@ template <typename T=int>
 struct FenwickTree {
     vector<T> bit;
     const T n;
-    BIT(T n_) : bit(n_ + 1, 0), n(n_) {};
-
-    T sum(int i) {
-        T s = 0;
-        while (i > 0) {
-            s += bit[i];
-            i -= i & -i;
-        }
-        return s;
-    };
+    FenwickTree(T n_) : bit(n_ + 1, 0), n(n_) {};
 
     void add(int i, T x) {
+        assert(0 <= i && i < n);
+        i++;
         while (i <= n) {
-            bit[i] += x;
+            bit[i - 1] += x;
             i += i & -i;
         }
-    };
+    }
+
+    T sum(int l, int r) {
+        assert(0 <= l && l <= r && r <= n);
+        return sum(r) - sum(l);
+    }
+
+    private:
+        T sum(int i) {
+            T s = 0;
+            while (i > 0) {
+                s += bit[i - 1];
+                i -= i & -i;
+            }
+            return s;
+        }
 };
