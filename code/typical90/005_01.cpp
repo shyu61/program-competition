@@ -2,6 +2,7 @@
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 using ll = long long;
+const int MOD = 1e9 + 7;
 
 // ジャンル
 // 桁問題, 倍数判定, 数え上げ, 数論, 桁dp
@@ -15,7 +16,7 @@ using ll = long long;
 // - Bの倍数 => mod_Bが0
 // - 桁dpは剰余と相性が良い(余りを持って桁dp)
 
-const int MOD = 1e9 + 7;
+// O(nbK)
 int main() {
     ll n; int b, K; cin >> n >> b >> K;
     vector<int> c(K);
