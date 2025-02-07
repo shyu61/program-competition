@@ -10,23 +10,25 @@ const int MOD = 1e9 + 7;
 
 using Mat = vector<vector<ll>>;
 
-Mat mul(Mat A, Mat B) {
-    Mat res = {{0,0},{0,0}};
-    for (int i = 0; i < 2; i++) {
-        for (int j = 0; j < 2; j++) {
-            for (int k = 0; k < 2; k++) {
-                res[i][j] = res[i][j] + A[i][k] * B[k][j];
-            }
-        }
+Mat mul(Mat A, Mat B, int mod) {
+    using mtype = typename Mat::value_type::value_type;
+    int n = A.size();
+    Mat res(n, vector<mtype>(n));
+    rep(i, n) rep(j, n) rep(k, n) {
+        res[i][j] = (res[i][j] + A[i][k] * B[k][j]) % mod;
     }
     return res;
 }
 
-Mat pow(Mat m, int n) {
-    Mat res = {{1,0},{0,1}};
+template<typename T>
+Mat pow(Mat A, T n, int mod) {
+    using mtype = typename Mat::value_type::value_type;
+    int sz = A.size();
+    Mat res(sz, vector<mtype>(sz));
+    rep(i, sz) res[i][i] = 1;
     while (n > 0) {
-        if (n & 1) res = mul(res, m);
-        m = mul(m, m);
+        if (n & 1) res = mul(res, A, mod);
+        A = mul(A, A, mod);
         n >>= 1;
     }
     return res;
@@ -40,11 +42,11 @@ int main() {
     Mat A(b, vector<ll>(b));
     rep(r, b) {
         rep(i, K) {
-            int nx = (10 * r + c[K]) % b;
-            A[r][nx] = (A[r][nx] + 1) % MOD;
+            int nx = (10 * r + c[i]) % b;
+            A[r][nx] += 1;
         }
     }
 
-    Mat An = pow(A, n);
+    Mat An = pow(A, n, MOD);
     cout << An[0][0] << endl;
 }
