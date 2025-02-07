@@ -9,6 +9,9 @@ using P = pair<int, int>;
 // 方針
 // 直径を求めれば良い
 
+// ポイント
+// グラフを作るときは、木やfunctional-graphなど特別なグラフかどうかまず確認する
+
 int main() {
     int n; cin >> n;
     vector<vector<int>> g(n);
