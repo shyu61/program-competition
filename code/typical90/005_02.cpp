@@ -4,6 +4,8 @@ using namespace std;
 using ll = long long;
 const int MOD = 1e9 + 7;
 
+// 行列累乗による解法: O(B^3logN)
+
 // ポイント
 // - dp[i][?] => dp[i+1][?] の遷移の形状が同じ場合は行列累乗の可能性を検討する
 //   - 遷移が線形であるかを確認。ほとんどのdpは非線形更新(min/max,その他条件分岐)になっている
@@ -43,6 +45,7 @@ int main() {
     rep(r, b) {
         rep(i, K) {
             int nx = (10 * r + c[i]) % b;
+            // r行目nx列の値は、rからnxへの遷移を表す
             A[r][nx] += 1;
         }
     }
