@@ -1,52 +1,49 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-namespace graph {
-    int N;
-    vector<vector<int>> G(N);
-    vector<bool> seen(N);
+int main() {
+    int n;
+    vector<vector<int>> g;
 
-    void dfs(int v) {
+    vector<bool> seen(n);
+    auto dfs = [&](auto dfs, int v) {
         seen[v] = true;
-        for (auto adj : G[v]) {
-            if (seen[adj]) continue;
-            dfs(adj);
+        for (auto u : g[v]) {
+            if (!seen[u]) dfs(dfs, u);
         }
-    }
+    };
 
-    void dfs_stack(int v) {
+    auto dfs_st = [&](int v) {
+        vector<bool> seen(n);
         stack<int> st;
-        st.push(v); seen[v] = true;
+        st.push(v);
 
         while (!st.empty()) {
-            int v = st.top();
-            int nxt = -1;
-            for (auto adj : G[v]) {
-                if (seen[adj]) continue;
-                st.push(adj); seen[adj] = true;
-                nxt = adj;
-                break;
+            int v = st.top(); st.pop();
+            if (seen[v]) continue;
+            seen[v] = true;
+
+            for (auto u : g[v]) {
+                if (!seen[v]) st.push(u);
             }
-            if (nxt == -1) st.pop();
         }
-    }
+    };
 
-    const int INF = 1e8; // FIXME
-    vector<int> dist(N, INF);
-
-    void bfs(int v) {
+    auto bfs = [&](int v) {
         queue<int> que;
-        que.push(v); seen[v] = true; dist[v] = 0;
+        que.push(v);
+        vector<int> dist(n, -1);
+        dist[v] = 0;
 
         while (!que.empty()) {
-            int u = que.front(); que.pop();
-
-            for (auto adj : G[u]) {
-                if (seen[adj]) continue;
-                que.push(adj); seen[adj] = true; dist[adj] = dist[u] + 1;
+            int v = que.front(); que.pop();
+            for (auto u : g[v]) {
+                if (dist[u] != -1) continue;
+                que.push(u);
+                dist[u] = dist[v] + 1;
             }
         }
-    }
+    };
 }
 
 namespace tree {
