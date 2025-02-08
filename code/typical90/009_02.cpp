@@ -46,27 +46,27 @@ int main() {
     double ans = 0;
     rep(i, n) {
         // 偏角ソート
-        vector<double> angs;
+        vector<double> ags;
         rep(j, n) {
             if (j == i) continue;
             Point p = ps[j] - ps[i];
-            angs.push_back(get_angle(p));
+            ags.push_back(get_angle(p));
         }
-        sort(angs.begin(), angs.end());
-        int m = angs.size();
+        sort(ags.begin(), ags.end());
+        int m = ags.size();
 
         // 点Aを全探索して、最も偏角が大きくなる点Cを二分探索
         double res = 0;
-        for (auto ang : angs) {
+        for (auto ang : ags) {
             double t = ang + 180;
             if (t >= 360) t -= 360;
-            int pos = lower_bound(angs.begin(), angs.end(), t) - angs.begin();
+            int pos = lower_bound(ags.begin(), ags.end(), t) - ags.begin();
 
             int cand1 = pos % m;
             int cand2 = (pos + m - 1) % m;
 
-            double c1 = get_angle2(ang, angs[pos % m]);
-            double c2 = get_angle2(ang, angs[(pos + m - 1) % m]);
+            double c1 = get_angle2(ang, ags[pos % m]);
+            double c2 = get_angle2(ang, ags[(pos + m - 1) % m]);
             res = max({ res, c1, c2});
         }
         ans = max(ans, res);
