@@ -61,13 +61,10 @@ int main() {
             double t = ang + 180;
             if (t >= 360) t -= 360;
             int pos = lower_bound(ags.begin(), ags.end(), t) - ags.begin();
-
-            int cand1 = pos % m;
-            int cand2 = (pos + m - 1) % m;
-
+            // 普通の配列の値と違って循環させたいので、配列外参照を除外するのではなく剰余を取る
             double c1 = get_angle2(ang, ags[pos % m]);
             double c2 = get_angle2(ang, ags[(pos + m - 1) % m]);
-            res = max({ res, c1, c2});
+            res = max({ res, c1, c2 });
         }
         ans = max(ans, res);
     }
