@@ -1,13 +1,13 @@
 #include <vector>
 using namespace std;
 
-struct UnionFind {
+struct Dsu {
     vector<int> par;
-    UnionFind(int n) : par(n, -1) {}
+    Dsu(int n) : par(n, -1) {}
     void init(int n) { par.assign(n, -1); }
     int root(int x) { return par[x] < 0 ? x : par[x] = root(par[x]); }
     bool same(int x, int y) { return root(x) == root(y); }
-    bool unite(int x, int y) {
+    bool merge(int x, int y) {
         x = root(x), y = root(y);
         if (x == y) return false;
         if (par[x] > par[y]) swap(x, y);
