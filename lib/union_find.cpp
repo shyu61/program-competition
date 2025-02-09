@@ -17,13 +17,13 @@ struct UnionFind {
         return leader(x) == leader(y);
     }
 
-    bool merge(int x, int y) {
+    int merge(int x, int y) {
         x = leader(x), y = leader(y);
-        if (x == y) return false;
+        if (x == y) return x;
         if (parents[x] > parents[y]) swap(x, y);
         parents[x] += parents[y];
         parents[y] = x;
-        return true;
+        return x;
     }
 
     int size(int x) {

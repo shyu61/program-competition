@@ -17,32 +17,32 @@ using namespace std;
 // vectorも末尾からなら順にpopすることができる
 
 struct UnionFind {
-    vector<int> par;
-    UnionFind(int n) : par(n, -1) {}
+    vector<int> parents;
+    UnionFind(int n) : parents(n, -1) {}
 
     void init(int n) {
-        par.assign(n, -1);
+        parents.assign(n, -1);
     }
 
     int leader(int x) {
-        return par[x] < 0 ? x : par[x] = leader(par[x]);
+        return parents[x] < 0 ? x : parents[x] = leader(parents[x]);
     }
 
     bool same(int x, int y) {
         return leader(x) == leader(y);
     }
 
-    bool merge(int x, int y) {
+    int merge(int x, int y) {
         x = leader(x), y = leader(y);
-        if (x == y) return false;
-        if (par[x] > par[y]) swap(x, y);
-        par[x] += par[y];
-        par[y] = x;
-        return true;
+        if (x == y) return x;
+        if (parents[x] > parents[y]) swap(x, y);
+        parents[x] += parents[y];
+        parents[y] = x;
+        return x;
     }
 
     int size(int x) {
-        return -par[leader(x)];
+        return -parents[leader(x)];
     }
 };
 
@@ -67,15 +67,14 @@ int main() {
         int s = uf.leader(u); lds.erase(s);
         int t = *lds.begin(); lds.erase(t);
 
-        uf.merge(s, t);
-        lds.insert(uf.leader(s));
+        int nl = uf.merge(s, t);
+        lds.insert(nl);
 
         cout << ei + 1 << ' ' << u + 1 << ' ' << t + 1 << '\n';
     }
 }
 
 // 自分の実装(AC)
-
 int main() {
     int n, m; cin >> n >> m;
     vector<pair<int, int>> es(m);
