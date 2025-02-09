@@ -6,6 +6,13 @@ using ll = long long;
 // ジャンル
 // 幾何, 組合せ最適化
 
+// ポイント
+// 3点を考える場合は、中心の点を固定(全探索)するとよい
+// 角度配列について
+// - 偏角についての配列にすると良い
+//   - 偏角はatan2を使う
+// - 二分探索は循環させる(剰余を取る)
+
 struct Point {
     ll x, y;
 
@@ -25,10 +32,9 @@ struct Point {
 };
 
 double get_angle(Point p) {
-    double a = p.x / p.abs();
-    double angle = acos(a) * 180.0 / M_PI;
-    if (p.y >= 0) return angle;
-    return 360 - angle;
+    double theta = atan2(p.y, p.x);
+    if (theta < 0) theta += 2 * M_PI;
+    return theta * 180 / M_PI;
 }
 
 double get_angle2(double i, double j) {
@@ -44,6 +50,7 @@ int main() {
     rep(i, n) cin >> ps[i].x >> ps[i].y;
 
     double ans = 0;
+    // 点Bは全探索
     rep(i, n) {
         // 偏角ソート
         vector<double> ags;
