@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define rep(i, n) for (int i = 0; i < (n); i++)
 
 // ジャンル
 // 最小最大化問題
@@ -10,11 +11,11 @@ using namespace std;
 int main() {
     int n, l, k; cin >> n >> l >> k;
     vector<int> a(n);
-    for (int i = 0; i < n; i++) cin >> a[i];
+    rep(i, n) cin >> a[i];
 
-    auto check = [&](int mid) -> bool {
+    auto is_ok = [&](int mid) -> bool {
         int cnt = 0, sum = 0;
-        for (int i = 0; i < n; i++) {
+        rep(i, n) {
             if (i == 0) sum += a[i];
             else sum += a[i] - a[i - 1];
 
@@ -27,10 +28,10 @@ int main() {
         return false;
     };
 
-    int lb = 0, ub = l + 1;
-    while (ub - lb > 1) {
-        int mid = (lb + ub) / 2;
-        check(mid) ? lb = mid : ub = mid;
+    int ok = 0, ng = l + 1;
+    while (ng - ok > 1) {
+        int mid = (ok + ng) / 2;
+        is_ok(mid) ? ok = mid : ng = mid;
     }
-    cout << lb << endl;
+    cout << ok << endl;
 }
