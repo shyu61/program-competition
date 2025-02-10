@@ -1,47 +1,43 @@
 // https://atcoder.jp/contests/dp/tasks/dp_j
-// https://qiita.com/drken/items/03c7db44ccd27820ea0d#j-%E5%95%8F%E9%A1%8C---sushi
 #include <bits/stdc++.h>
 using namespace std;
+#define rep(i, n) for (int i = 0; i < (n); i++)
 
 // ジャンル
-// 期待値dp問題
+// 期待値問題
 
 // 方針
-// 操作で変化するものを考えると、各皿の残り寿司数になる。全部個別管理するのは状態数が爆発するので状態数を減らすことを考える。
-// 期待値dpで状態数を減らす最も典型はカテゴリー化。残り寿司数ごとにまとめて考える
-// dp[残り個数1][残り個数2][残り個数3] := E[操作回数] とすれば良さそう。Σj(Cj*Pj)は常に1
+// 逐次的な操作により複数の状態を持ち、状態に依存して確率が変化するタイプの問題なのでdpで考える
+// 寿司が乗っている皿の枚数によって寿司を減らせる確率が変化するので、状態は寿司が乗っている残り皿数に関する情報を持たせる
 
 // ポイント
-// - 期待値問題の基本系: `dp[i+1] = Σj(dp[j]*Pj + Cj*Pj)`
-//   - dp[j]はjに遷移する全てのパスを考慮した確率1の期待値であり、i+1に遷移するパスとしてjを通る確率は必ずしも1ではない。ゆえにPjをかけて期待値を調整する
-//   - Cj*Pjは操作に対する固定コストであり、多くの問題においてΣj(Cj*Pj)=1になる
-// - ある状態への遷移が±絡む場合は再帰を使う方が安全
+// dpの遷移記述の方式
+//   1. 到達点への遷移
+//     - 順方向にdpテーブルを埋めていく
+//   2. 出発点からの遷移
+//     - 逆方向にdpテーブルを埋めていく。再帰で書くことが多い
+// 遷移に±両方が絡む場合は再帰で書く
+// 自己遷移に注意する、dpは必ず立式してから実装する
 
-int main(){
-    int N; cin >> N;
-    vector<int> A(N);
-    for (int i = 0; i < N; i++) cin >> A[i];
-
-    int c1 = 0, c2 = 0, c3 = 0;
-    for (auto a : A) {
-        if (a == 1) c1++;
-        if (a == 2) c2++;
-        if (a == 3) c3++;
+int main() {
+    int n; cin >> n;
+    vector<int> a(3);
+    rep(i, n) {
+        int ai; cin >> ai; ai--;
+        a[ai]++;
     }
 
-    vector<vector<vector<double>>> dp(N + 2, vector<vector<double>>(N + 2, vector<double>(N + 2, -1)));
+    vector<vector<vector<double>>> dp(n + 1, vector<vector<double>>(n + 1, vector<double>(n + 1, -1)));
     auto rec = [&](auto rec, int i, int j, int k) -> double {
-        if (dp[i][j][k] >= 0) return dp[i][j][k];
-        int bottom = i + j + k;
-        if (bottom == 0) return 0;
-
-        double top = N;
-        if (k - 1 >= 0) top += k * rec(rec, i, j + 1, k - 1);
-        if (j - 1 >= 0) top += j * rec(rec, i + 1, j - 1, k);
-        if (i - 1 >= 0) top += i * rec(rec, i - 1, j, k);
-        
-        return dp[i][j][k] = top / bottom;
+        if (i + j + k == 0) return 0;
+        if (dp[i][j][k] != -1) return dp[i][j][k];
+        double res = n;
+        if (i > 0) res += rec(rec, i - 1, j + 1, k) * i;
+        if (j > 0) res += rec(rec, i, j - 1, k + 1) * j;
+        if (k > 0) res += rec(rec, i, j, k - 1) * k;
+        return dp[i][j][k] = res / (i + j + k);
     };
 
-    cout << fixed << setprecision(10) << rec(rec, c1, c2, c3) << endl;
+    double ans = rec(rec, a[2], a[1], a[0]);
+    cout << fixed << setprecision(12) << ans << endl;
 }
