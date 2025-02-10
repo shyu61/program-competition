@@ -41,23 +41,23 @@ public:
         }
     }
 
-    // x以上(以下)となる最初の点
-    int lower_bound(T x, int id = 0, int l = 0, int r = -1) {
+    // x以上となる最初の点
+    int lower_bound(T x, T sum = 0, int id = 0, int l = 0, int r = -1) {
         if (l == r) return l;
         if (r < 0) r = n;
-        if (dat[id] < x) return n;
-        T vl = lower_bound(x, id * 2 + 1, l, (l + r) / 2);
+        if (dat[id] + sum < x) return n;
+        T vl = lower_bound(x, sum, id * 2 + 1, l, (l + r) / 2);
         if (vl != n) return vl;
-        return lower_bound(x, id * 2 + 2, (l + r) / 2, r);
+        return lower_bound(x, sum + dat[id * 2 + 1], id * 2 + 2, (l + r) / 2, r);
     }
 
-    // xより大きく(小さく)なる最初の点
-    int upper_bound(T x, int id = 0, int l = 0, int r = -1) {
+    // xより大きくなる最初の点
+    int upper_bound(T x, T sum = 0, int id = 0, int l = 0, int r = -1) {
         if (l == r) return l;
         if (r < 0) r = n;
-        if (dat[id] <= x) return n;
-        T vr = upper_bound(x, id * 2 + 2, (l + r) / 2, r);
+        if (dat[id] + sum <= x) return n;
+        T vr = upper_bound(x, sum + dat[id * 2 + 1], id * 2 + 2, (l + r) / 2, r);
         if (vr != n) return vr;
-        return upper_bound(x, id * 2 + 1, l, (l + r) / 2);
+        return upper_bound(x, sum, id * 2 + 1, l, (l + r) / 2);
     }
 };
