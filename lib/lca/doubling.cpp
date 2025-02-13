@@ -41,6 +41,7 @@ int main() {
         // parentが一致する限りdoublingで減らして行き、一致しない時は親に登って再度doublingで減らす
         for (int i = LOG - 1; i >= 0; i--) {
             // lca以上は必ず一致するので、一致しない時点でlbを更新する
+            // 減らし過ぎたら親に戻って、次ループへ(次ループは移動幅が1/2になる)
             if (parent[i][u] != parent[i][v]) {
                 u = parent[i][u];
                 v = parent[i][v];
