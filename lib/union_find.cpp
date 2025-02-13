@@ -1,9 +1,10 @@
-#include <vector>
+#include <bits/stdc++.h>
 using namespace std;
 
 struct UnionFind {
+    int _n;
     vector<int> parents;
-    UnionFind(int n) : parents(n, -1) {}
+    UnionFind(int n) : _n(n), parents(n, -1) {}
 
     void init(int n) {
         parents.assign(n, -1);
@@ -28,6 +29,22 @@ struct UnionFind {
 
     int size(int x) {
         return -parents[leader(x)];
+    }
+
+    vector<vector<int>> groups() {
+        vector<int> lds(_n);
+        for (int i = 0; i < _n; i++) lds[i] = leader(i);
+        vector<vector<int>> res(_n);
+        for (int i = 0; i < _n; i++) res[lds[i]].push_back(i);
+        res.erase(
+            remove_if(
+                res.begin(),
+                res.end(),
+                [&](const vector<int>& vec) { return vec.empty(); }
+            ),
+            res.end()
+        );
+        return res;
     }
 };
 
