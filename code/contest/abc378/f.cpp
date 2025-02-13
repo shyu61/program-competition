@@ -4,10 +4,19 @@ using namespace std;
 using ll = long long;
 
 // ジャンル
-// 経路探索問題, 数え上げ, 連結成分問題
+// 経路探索問題, 数え上げ, 連結成分問題, 木DP
+
+// 方針
+// 木における経路探索は適当なLCAを決めて木DPするのが基本戦略
+// また、グラフにおいて同一構造の考慮が必要なケースは、縮約して問題を単純化できないか検討するのも鉄則
+// -> 縮約にはunionfindを使うとよい
 
 // ポイント
 // 単純グラフ: 多重辺も自己ループももたないグラフ
+// グラフにおける同一構造は縮約して考えることを検討する
+// 木の経路探索問題は、適当なLCAを決めて木DPで解けるケースが多い
+// 木DPは基本bottom-upなので、dfsの帰りがけで処理を行う
+// 複数の子からの情報の扱いが重要。累積的に使うのか組み合わせ的に使うのかなど
 
 struct UnionFind {
     int _n;
@@ -56,6 +65,7 @@ struct UnionFind {
     }
 };
 
+// 同一構造の縮約を使った解法
 int main() {
     int n; cin >> n;
     vector<vector<int>> g(n);
@@ -83,6 +93,47 @@ int main() {
         ll sum = 0;
         for (auto u : gp) sum += nodes[u];
         ans += sum * (sum - 1) / 2;
+    }
+
+    cout << ans << endl;
+}
+
+// 木DPを使った解法
+int main() {
+    int n; cin >> n;
+    vector<vector<int>> g(n);
+    vector<int> deg(n);
+    rep(i, n - 1) {
+        int u, v; cin >> u >> v; u--, v--;
+        g[u].push_back(v);
+        g[v].push_back(u);
+        deg[u]++, deg[v]++;
+    }
+
+    ll ans = 0;
+    vector<ll> dp(n);
+    auto dfs = [&](auto dfs, int v, int p) -> void {
+        for (auto u : g[v]) {
+            if (u == p) continue;
+            dfs(dfs, u, v);
+            // パスの中間点になる
+            if (deg[v] == 3) {
+                ans += dp[v] * dp[u];
+                dp[v] += dp[u];
+            }
+            // パスの終点になる
+            if (deg[v] == 2) ans += dp[u];
+        }
+        if (deg[v] == 2) dp[v]++;
+    };
+
+    dfs(dfs, 0, -1);
+
+    // 次数2の頂点が隣接している部分を除外
+    rep(i, n) {
+        for (auto j : g[i]) {
+            if (i < j && deg[i] == 2 && deg[j] == 2) ans--;
+        }
     }
 
     cout << ans << endl;
