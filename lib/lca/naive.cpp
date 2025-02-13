@@ -2,35 +2,30 @@
 using namespace std;
 
 // O(n)
+int main() {
+    int n;
+    vector<vector<int>> g(n);
 
-int root;
-vector<vector<int>> G;
-vector<int> parent, depth;  // 根ノードの親は-1とする
+    // 前処理
+    vector<int> parent(n), depth(n);
+    auto dfs = [&](auto dfs, int v, int p, int d) -> void {
+        parent[v] = p;
+        depth[v] = d;
+        for (auto to : g[v]) {
+            if (to == p) continue;
+            dfs(dfs, to, v, d + 1);
+        }
+    };
+    dfs(dfs, 0, -1, 0);
 
-void dfs(int v, int p, int d) {
-    parent[v] = p;
-    depth[v] = d;
-    for (auto u : G[v]) {
-        if (u != p) dfs(u, v, d + 1);
-    }
-}
-
-// 初期化
-void init() {
-    // parentとdepthを初期化する
-    dfs(root, -1, 0);
-}
-
-// uとvのLCAを求める
-int lca(int u, int v) {
-    // uとvの深さを揃える
-    while (depth[u] > depth[v]) u = parent[u];
-    while (depth[v] > depth[u]) v = parent[v];
-
-    // 同じ頂点に到達するまで親を辿る
-    while (u != v) {
-        u = parent[u];
-        v = parent[v];
-    }
-    return u;
+    auto lca = [&](int u, int v) -> int {
+        // 深さを揃える
+        while (depth[u] > depth[v]) u = parent[u];
+        while (depth[v] > depth[u]) v = parent[v];
+        while (u != v) {
+            u = parent[u];
+            v = parent[v];
+        }
+        return u;
+    };
 }
