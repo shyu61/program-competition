@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define rep(i, n) for (int i = 0; i < (n); i++)
 
 int main() {
     int n; cin >> n;
@@ -10,7 +11,7 @@ int main() {
     int n2 = sqrt(n);
     int bk_size = n / n2 + 1;
     vector<vector<int>> bk(bk_size);
-    for (int i = 0; i < n; i++) {
+    rep(i, n) {
         bk[i / n2].push_back(a[i]);
         if ((i + 1) % n2 == 0) {
             // FIXME
@@ -27,7 +28,7 @@ int main() {
         // もはや元の配列を見れば十分
         a[l++];  // 処理を追加
     }
-    while (l < r && l % n2 != 0) {
+    while (l < r && r % n2 != 0) {
         a[--r];  // 処理を追加
     }
 
