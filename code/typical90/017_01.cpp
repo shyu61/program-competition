@@ -7,7 +7,10 @@ using namespace std;
 
 struct Point {
     int s, t;
-    bool operator<(const Point& other) { return s < other.s; }
+    bool operator<(const Point& other) const {
+        if (s == other.s) return t < other.t;
+        return s < other.s;
+    }
 };
 
 int main() {
