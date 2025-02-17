@@ -5,20 +5,17 @@ using P = pair<int, int>;
 
 int main() {
     int n, m; cin >> n >> m;
-    vector<P> edge;
+    set<P> edges;
     int ans = 0;
     rep(i, m) {
-        int u, v; cin >> u >> v, u--, v--;
-        if (u == v) ans++;
-        else {
-            if (v > u) swap(u, v);
-            edge.emplace_back(u, v);
+        int u, v; cin >> u >> v;
+        if (u == v) {
+            ans++;
+            continue;
         }
+        if (u > v) swap(u, v);
+        if (edges.contains({u, v})) ans++;
+        else edges.emplace(u, v);
     }
-
-    sort(edge.begin(), edge.end());
-    int x = edge.size();
-    edge.erase(unique(edge.begin(), edge.end()), edge.end());
-    ans += x - edge.size();
     cout << ans << endl;
 }
