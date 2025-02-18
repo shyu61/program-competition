@@ -4,6 +4,10 @@ using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 const int INF = 1001001001;
 
+// ポイント
+// 「要素が小さい方が有利」といった貪欲的視点をdpに組み込むアプローチは頻出
+// 部分列などを作る時は、長さよりも「最終要素」を添え字に持つ方法をよく使う
+
 // O(NlogN)
 int main() {
     int n; cin >> n;
