@@ -21,6 +21,7 @@ int main() {
         *lower_bound(dp.begin(), dp.end(), a[i]) = a[i];
     }
 
+    // dp[i]<INFとなる最大のiに対してi+1が解
     int ans = lower_bound(dp.begin(), dp.end(), INF) - dp.begin();
     cout << ans << endl;
 }
