@@ -4,6 +4,9 @@ using namespace std;
 const int INF = 1001001001;
 using P = pair<int, int>;
 
+// ジャンル
+// LIS
+
 int main() {
     int n, Q; cin >> n >> Q;
     vector<int> a(n);
