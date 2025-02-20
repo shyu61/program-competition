@@ -2,64 +2,66 @@
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 using ll = long long;
-const int INF = 1001001001;
+using P = pair<int, int>;
 
-struct Point {
-    int s, t;
-    bool operator<(const Point& other) const {
-        if (s == other.s) return t < other.t;
-        return s < other.s;
+template <typename T=int>
+struct FenwickTree {
+    vector<T> bit;
+    const T n;
+    FenwickTree(T n_) : bit(n_ + 1, 0), n(n_) {};
+
+    void add(int i, T x) {
+        assert(0 <= i && i < n);
+        i++;
+        while (i <= n) {
+            bit[i - 1] += x;
+            i += i & -i;
+        }
     }
+
+    T sum(int l, int r) {
+        assert(0 <= l && l <= r && r <= n);
+        return sum(r) - sum(l);
+    }
+
+    private:
+        T sum(int i) {
+            T s = 0;
+            while (i > 0) {
+                s += bit[i - 1];
+                i -= i & -i;
+            }
+            return s;
+        }
 };
 
 int main() {
-    int n, m; cin >> n >> m;
-    vector<Point> seg(m);
+    int n, m;
+    cin >> n >> m;
+    vector<P> s(m);
     rep(i, m) {
-        int l, r; cin >> l >> r, l--, r--;
-        seg[i] = Point{l, r};
+        int l, r;
+        cin >> l >> r, l--, r--;
+        s[i] = {l, r};
     }
-    sort(seg.begin(), seg.end());
+    sort(s.begin(), s.end(), [](const P &a, const P &b) {
+        return a.first == b.first ? a.second > b.second : a.first < b.first;
+    });
 
-    auto compT = [&](const Point& a, const Point& b) { return a.t < b.t; };
-
-    // int n2 = sqrt(m);
-    int n2 = 2300;  // √mlogm
-    int bk_size = m / n2 + 1;
-    vector<vector<Point>> bk(bk_size);
+    FenwickTree<ll> ft(n), ft2(n);
     rep(i, m) {
-        bk[i / n2].push_back(seg[i]);
-        if ((i + 1) % n2 == 0) {
-            sort(bk[i / n2].begin(), bk[i / n2].end(), compT);
-        }
+        ft.add(s[i].first, 1);
+        ft2.add(s[i].second, 1);
     }
-    sort(bk.back().begin(), bk.back().end(), compT);
 
     ll ans = 0;
     rep(i, m) {
-        int s1 = seg[i].s, t1 = seg[i].t;
-        // s1<s2
-        auto it1 = upper_bound(seg.begin() + i + 1, seg.end(), Point{s1, INF});
-        // s2<t1
-        auto it2 = lower_bound(it1, seg.end(), Point{t1, 0});
-        // t1<t2: segはsについてsortしているのでそのままでは二分探索できない
-        // 代わりにtでsortしたbucketを使う
-        ll res = 0;
-        int l = it1 - seg.begin(), r = it2 - seg.begin();
-        // 境界バケットを処理
-        while (l < r && l % n2 != 0) {
-            if (t1 < seg[l++].t) res++;
-        }
-        while (l < r && r % n2 != 0) {
-            if (t1 < seg[--r].t) res++;
-        }
-        // 完全に含まれるバケットを処理
-        while (l < r) {
-            int j = l / n2;
-            res += bk[j].end() - upper_bound(bk[j].begin(), bk[j].end(), Point{0, t1}, compT);
-            l += n2;
-        }
-        ans += res;
+        ft.add(s[i].first, -1);
+        ft2.add(s[i].second, -1);
+        // 補集合を考える
+        ans += m - i - 1;
+        ans -= ft.sum(s[i].second, n);
+        ans -= ft2.sum(0, s[i].second + 1);
     }
     cout << ans << endl;
 }
