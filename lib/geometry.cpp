@@ -8,6 +8,11 @@ struct Point {
     Point() {}
     Point(double x, double y) : x(x), y(y) {}
 
+    bool operator<(const Point& other) const {
+        if (x == other.x) return y < other.y;
+        return x < other.x;
+    }
+
     Point operator+(Point p) { return Point(x + p.x, y + p.y); }
     Point operator-(Point p) { return Point(x - p.x, y - p.y); }
     Point operator*(double k) { return Point(k * x, k * y); }
