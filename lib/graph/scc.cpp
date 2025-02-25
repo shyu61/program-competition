@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define rep(i, n) for (int i = 0; i < (n); i++)
 
 // 強連結成分の性質
 // - 強連結成分を縮約して1つの頂点とすると、グラフはDAGになる
@@ -15,51 +16,44 @@ using namespace std;
 // Tarjan法はlow_linkを使うのでまさに同じアルゴリズムだと言える
 // 要するに子から祖先へのバイパスがあるかを調べている(親から子孫へは当然パスがあるのでバイパスがあれば双方にパスがあることになる)
 
-vector<vector<int>> G, rG;
-vector<bool> used;
-vector<int> vs, cmp;  // 属する強連結成分のトポロジカル順序
-
-void add_edge(int from, int to) {
-    G[from].push_back(to);
-    rG[to].push_back(from);
-}
-
-void dfs(int v) {
-    used[v] = true;
-    for (auto adj : G[v]) {
-        if (!used[adj]) dfs(adj);
-    }
-    vs.push_back(v);
-}
-
-void rdfs(int v, int k) {
-    used[v] = true;
-    cmp[v] = k;
-    for (auto adj : rG[v]) {
-        if (!used[adj]) rdfs(adj, k);
-    }
-}
-
-int scc(int V) {
-    used = vector<bool>(V);
-    vs = cmp = vector<int>(V);
-
-    for (int v = 0; v < V; v++) {
-        if (!used[v]) dfs(v);  // vsを計算
+struct Scc {
+    int n;
+    vector<bool> used;
+    vector<int> vs, cmp;  // 属する強連結成分のトポロジカル順序
+    vector<vector<int>> g, rg;
+    Scc(int _n, const vector<vector<int>>& _g, const vector<vector<int>>& _rg)
+    : n(_n), g(_g), rg(_rg) {
+        used.resize(n);
+        cmp.resize(n);
     }
 
-    fill(used.begin(), used.end(), 0);
-    int k = 0;
-    // 帰りがけに振った番号が大きいもの(根本側)から調べる
-    for (int i = vs.size() - 1; i >= 0; i--) {
-        if (!used[vs[i]]) rdfs(vs[i], k++);
+    void dfs(int v) {
+        used[v] = true;
+        for (auto u : g[v]) {
+            if (!used[u]) dfs(u);
+        }
+        vs.push_back(v);
     }
-    return k;
-}
 
-int main() {
-    int V = 10;
-    G = rG = vector<vector<int>>(V);
-    add_edge(1, 2);
-    scc(V);
-}
+    void rdfs(int v, int k) {
+        used[v] = true;
+        cmp[v] = k;
+        for (auto u : rg[v]) {
+            if (!used[u]) rdfs(u, k);
+        }
+    }
+
+    int decompose() {
+        fill(used.begin(), used.end(), 0);
+        rep(i, n) {
+            if (!used[i]) dfs(i);  // vsを計算
+        }
+        fill(used.begin(), used.end(), 0);
+        int k = 0;
+        // 帰りがけに振った番号が大きいもの(根本側)から調べる
+        for (int i = n - 1; i >= 0; i--) {
+            if (!used[vs[i]]) rdfs(vs[i], k++);
+        }
+        return k;
+    }
+};
