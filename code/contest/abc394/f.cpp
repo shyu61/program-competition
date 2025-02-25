@@ -1,10 +1,19 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
-using P = pair<int, int>;
 
 // ジャンル
-// グラフ理論, 無向木, サブグラフ問題, 数え上げ
+// グラフ理論, 無向木, サブグラフ問題, 木dp
+
+// 方針
+// 特定の条件を満たす部分木を探索する問題なので、木dpを考えつつ部分木を評価していく
+
+// ポイント
+// 木dpで重要なのは2つ
+// - 何を伝播させるか
+// - いつansを更新するか
+// 部分木とは、今見ているノードが根になるということ。つまり根としての条件を適用する必要がある
+// 場合分けは丁寧に
 
 int main() {
     int n; cin >> n;
@@ -15,41 +24,27 @@ int main() {
         g[b].push_back(a);
     }
 
-    vector<int> deg(n);
-    rep(i, n) deg[i] = g[i].size();
-
-    // 木dp
-    vector<P> dp(n);
-    auto dfs = [&](auto dfs, int v, int p) -> void {
-        dp[v].first++;
-        vector<P> res;
+    int ans = -1;
+    auto dfs = [&](auto dfs, int v, int p) -> int {
+        vector<int> d;
         for (auto u : g[v]) {
             if (u == p) continue;
-            dfs(dfs, u, v);
-            res.push_back(dp[u]);
+            d.push_back(dfs(dfs, u, v));
         }
-        sort(res.begin(), res.end(), greater<>());
+        sort(d.begin(), d.end(), greater());
 
-        if (deg[v] == 1 || deg[v] == 4) {
-            rep(i, res.size()) {
-                dp[v].first += res[i].first;
-                dp[v].second = dp[v].second || res[i].second;
-            }
-            if (deg[v] == 4) dp[v].second = true;
-        } else if (deg[v] < 4) {
-            if (dp[v].second) dp[v].first += res[0].first;
-            else {
-
-            }
-            dp[v] += res[0];
-        } else if (deg[v] > 4) {
-            rep(i, 4) dp[v] += res[i];
+        int res = 1;
+        if (d.size() >= 3) {
+            rep(i, 3) res += d[i];
+            // vを根とする部分木が解となるケース
+            if (d.size() >= 4) ans = max(ans, res + d[3]);
+        } else if (d.size() > 0) {
+            ans = max(ans, res + d[0]);
         }
+        return res;
     };
 
     dfs(dfs, 0, -1);
-    int ans = 0;
-    rep(i, n) ans = max(ans, dp[i]);
-    if (ans == 0) ans = -1;
+    if (ans <= 4) ans = -1;
     cout << ans << endl;
 }
