@@ -3,6 +3,7 @@
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 using mint = atcoder::modint1000000007;
+using P = pair<int, bool>;
 
 vector<int> dx = {1,1,1,0,0,-1,-1,-1}, dy = {1,0,-1,1,-1,1,0,-1};
 
@@ -11,7 +12,7 @@ int main() {
     vector<string> mas(h);
     rep(i, h) cin >> mas[i];
 
-    vector<vector<bool>> used(3, vector<bool>(w));
+    vector<vector<bool>> used(25, vector<bool>(25));
     auto check = [&](int i, int j) -> bool {
         rep(r, 8) {
             int ni = i + dy[r], nj = j + dx[r];
@@ -21,50 +22,53 @@ int main() {
         return true;
     };
 
+    vector<unordered_map<int, P>> mp(w);  // 位置状態ごとに状態と状態番号を紐づける(圧縮のため)
     vector<vector<int>> states(w);
-    auto dfs = [&](auto dfs, int pos, int d, int state) -> void {
-        int i = pos / w, j = pos % w;
-        if (d == w + 1) {
-            states[j].push_back(state);
-            return;
-        }
-        dfs(dfs, pos + 1, d + 1, state);  // 置かない場合
+	auto dfs = [&](auto dfs, int pos, int d, int state) -> void {
+		int i = pos / w, j = pos % w;
+		if (d == w + 1) {
+            mp[j][state] = make_pair(states[j].size(), check(i, j));
+			states[j].push_back(state);
+			return;
+		}
+	    dfs(dfs, pos + 1, d + 1, state);  // 置かない場合
         if (check(i, j)) {
             used[i][j] = true;
             dfs(dfs, pos + 1, d + 1, state | 1 << d);  // 置く場合
             used[i][j] = false;
         }
-    };
+	};
 
-    rep(i, w) dfs(dfs, i, 0, 0);
+	rep(i, w) dfs(dfs, i, 0, 0);
 
-    auto check2 = [&](int s, int i, int j) -> bool {
-        if (i - 1 >= 0 && j - 1 >= 0 && s & 1) return true;
-        if (i - 1 >= 0 && s >> 1 & 1) return true;
-        if (i - 1 >= 0 && j + 1 < w && s >> 2 & 1) return true;
-        if (j - 1 >= 0 && s >> w & 1) return true;
-        return false;
-    };
+    vector<vector<int>> nx0(w), nx1(w);
+    rep(i, w) {
+        for (auto s : states[i]) {
+            int nx0i = mp[(i + 1) % w][s >> 1].first;
+            int nx1i = mp[(i + 1) % w][s >> 1 | 1 << w].first;
+            bool ok = mp[i % w][s].second;
 
-    int w2 = 1 << (w + 1);
-    vector<mint> dp(w2);
-    dp[0] = 1;
-    rep(i, h) {
-        rep(j, w) {
-            vector<mint> old(w2);
-            swap(dp, old);
-            for (auto s : states[j]) {
-                int nx = s >> 1;
-                if (mas[i][j] == '#' || check2(s, i, j)) dp[nx] += old[s];
-                else {
-                    dp[nx | 1 << w] += old[s];
-                    dp[nx] += old[s];
-                }
-            }
+            nx0[i].push_back(nx0i);
+            nx1[i].push_back(ok ? nx1i : -1);
         }
     }
 
-    mint ans = 0;
-    rep(i, w2) ans += dp[i];
-    cout << ans.val() << endl;
+    vector<mint> dp(states[0].size());
+    dp[0] = 1;
+	rep(i, h) {
+		rep(j, w) {
+            vector<mint> old(states[(j + 1) % w].size());
+            swap(dp, old);
+            rep(si, states[j].size()) {
+				dp[nx0[j][si]] += old[si];
+				if (nx1[j][si] != -1 && mas[i][j] == '.') {
+                    dp[nx1[j][si]] += old[si];
+                }
+			}
+		}
+	}
+
+	mint ans = 0;
+    rep(i, states[0].size()) ans += dp[i];
+	cout << ans.val() << endl;
 }
