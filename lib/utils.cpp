@@ -18,3 +18,9 @@ int char_to_int(char c) {
 string int_to_string(int i) {
     return to_string(i);
 }
+
+int main() {
+    vector<int> a;
+    // unique
+    a.erase(unique(a.begin(), a.end()), a.end());
+}
