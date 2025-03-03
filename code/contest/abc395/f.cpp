@@ -21,17 +21,11 @@ int main() {
     rep(i, n) hmax = min(hmax, u[i] + d[i]);
 
     auto check = [&](int h) -> bool {
-        int pmx, pmn;
+        int pmx = h, pmn = 0;
         rep(i, n) {
             int c = u[i] + d[i] - h;
             int mx = u[i] >= c ? d[i] : d[i] - (c - u[i]);
             int mn = max(d[i] - c, 0);
-
-            if (i == 0) {
-                pmx = mx;
-                pmn = mn;
-                continue;
-            }
 
             mx = min(mx, pmx + x);
             mn = max(mn, pmn - x);
@@ -39,8 +33,7 @@ int main() {
             if (mx < pmn - x) return false;
             if (mn > pmx + x) return false;
 
-            pmx = mx;
-            pmn = mn;
+            pmx = mx; pmn = mn;
         }
         return true;
     };
