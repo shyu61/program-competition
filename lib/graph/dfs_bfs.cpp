@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-int main() {
+void graph() {
     int n;
     vector<vector<int>> g;
 
@@ -46,35 +46,31 @@ int main() {
     };
 }
 
-namespace tree {
-    int N;
-    vector<vector<int>> G(N);
-    // seenでの再訪管理が不要
+void tree() {
+    vector<vector<int>> g;
 
-    void dfs(int v, int p) {
-        for (auto adj : G[v]) {
-            if (adj == p) continue;
-            dfs(adj, v);
+    auto dfs = [&](auto dfs, int v, int p) -> void {
+        for (auto u : g[v]) {
+            if (u == p) continue;
+            dfs(dfs, u, v);
         }
-    }
+    };
+    dfs(dfs, 0, -1);
 }
 
-namespace grid {
-    int H, W;
-    vector<vector<int>> color(H, vector<int>(W));
+void grid() {
+    const vector<int> dx = {1,0,0,1}, dy = {0,1,-1,0};
 
-    void dfs(int x, int y) {
-        if (x == H) return;
+    int h, w;
+    vector<string> mas(h);
 
-        int nx = x + (y + 1) / W;
-        int ny = (y + 1) % W;
-
-        // 塗る場合
-        color[nx][ny] = 1;
-        dfs(nx, ny);
-        color[nx][ny] = 0;
-
-        // 塗らない場合
-        dfs(nx, ny);
-    }
+    auto dfs = [&](auto dfs, int i, int j) -> void {
+        rep(r, 4) {
+            int nh = i + dx[r], nw = j + dy[r];
+            if (nh < 0 || nh >= h || nw < 0 || nw >= h) continue;
+            if (mas[nh][nw] != '.') continue;
+            mas[nh][nw] = 'x';
+            dfs(dfs, nh, nw);
+        }
+    };
 }
