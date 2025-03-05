@@ -43,7 +43,7 @@ int main() {
 
     int ans = 0;
     set<int> st;
-    for (auto [ny, type, id] : events) {
+    for (auto [_, type, id] : events) {
         if (type == 1) st.insert(seg[id].first.x);
         if (type == 3) st.erase(seg[id].second.x);
         if (type == 2) {
