@@ -2,23 +2,18 @@
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 
+// ポイント
+// unordered_mapのkeyはintやstringは使えるが、pairやtupleは使えない
+
 int main() {
     int n; cin >> n;
-    int m = 1000;
-    vector<vector<int>> mas(m + 1, vector<int>(m + 1));
+    vector<string> s(n);
+    rep(i, n) cin >> s[i];
+
+    unordered_map<string, bool> mp;
     rep(i, n) {
-        int lx, ly, rx, ry; cin >> lx >> ly >> rx >> ry;
-        mas[lx][ly]++;
-        mas[lx][ry]--;
-        mas[rx][ly]--;
-        mas[rx][ry]++;
+        if (mp[s[i]]) continue;
+        mp[s[i]] = true;
+        cout << i + 1 << '\n';
     }
-
-    rep(i, m + 1) rep(j, m) mas[i][j + 1] += mas[i][j];
-    rep(i, m) rep(j, m + 1) mas[i + 1][j] += mas[i][j];
-
-    vector<int> ans(n + 1);
-    rep(i, m + 1) rep(j, m + 1) ans[mas[i][j]]++;
-
-    for (int i = 1; i <= n; i++) cout << ans[i] << '\n';
 }

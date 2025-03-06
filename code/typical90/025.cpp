@@ -1,45 +1,52 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
+using ll = long long;
 
 // 想定解
-// 木の彩色(二部グラフ)
+// まとめて全探索
+
+// 罠
+// 全探索はmではなくf(m)についてする必要がある
+// → mに比べてf(m)の通り数が少ないことに気付く必要がある
+// 桁問題なので、桁dpや約数なども選択肢に上がってしまう点
+// → 桁を累積的に見てもf(m)=m-Bかは途中で評価できないので、dpは意味がない
+// → 素因数分解をしても引き算が絡むのでうまく絞れない
 
 // ポイント
-// 木は二部グラフ
-// 二部グラフの特徴
-// - 奇数長の閉路を含まない
-// - 最大マッチングが多項式時間で解ける
+// 桁操作は文字列を使うと楽
 
 int main() {
-    int n; cin >> n;
-    vector<vector<int>> g(n);
-    rep(i, n - 1) {
-        int u, v; cin >> u >> v, u--, v--;
-        g[u].push_back(v);
-        g[v].push_back(u);
-    }
+    ll n, b; cin >> n >> b;
+    int d = int(log10(n)) + 1;
 
-    vector<int> color(n);
-    auto dfs = [&](auto dfs, int v, int p, int c) -> void {
-        color[v] = c;
-        for (auto u : g[v]) {
-            if (u == p) continue;
-            dfs(dfs, u, v, !c);
+    unordered_map<ll, vector<string>> a;
+    auto rec = [&](auto rec, int s, string c) -> void {
+        if (c.size() <= d) {
+            ll p = 1;
+            for (auto& ci : c) p *= int(ci - '0');
+            if (p + b <= n) a[p].push_back(c);
+            if (c.size() == d) return;
+        }
+        for (int i = s; i < 10; i++) {
+            c.push_back(i + '0');
+            rec(rec, i, c);
+            c.pop_back();
         }
     };
 
-    dfs(dfs, 0, -1, 0);
-    int cnt = 0;
-    rep(i, n) if (color[i]) cnt++;
-    int tc = cnt >= n / 2 ? 1 : 0;
-    int num = n / 2;
-    rep(i, n) {
-        if (num == 0) break;
-        if (color[i] == tc) {
-            cout << i + 1 << ' ';
-            num--;
+    rec(rec, 0, "");
+
+    ll ans = 0;
+    for (auto& [fm, ss] : a) {
+        string ms = to_string(fm + b);
+        sort(ms.begin(), ms.end());
+        for (auto& s : ss) {
+            if (s == ms) {
+                ans++;
+                break;
+            }
         }
     }
-    cout << endl;
+    cout << ans << endl;
 }

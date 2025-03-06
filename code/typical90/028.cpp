@@ -2,82 +2,23 @@
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 
-// 想定解
-// lazysegtree
-
-// 区間min/max x RUQ
-template<typename T, auto op, T iv>
-struct LazySegtree {
-private:
-    int n = 1;
-    vector<T> dat, lazy;
-    vector<bool> flag;
-
-public:
-    LazySegtree() {}
-    LazySegtree(const vector<int>& a) {
-        int sz = a.size();
-        while (n < sz) n *= 2;
-        dat = vector<T>(n * 2 - 1, iv);
-        lazy = vector<T>(n * 2 - 1);
-        flag = vector<bool>(n * 2 - 1);
-
-        for (int i = 0; i < sz; i++) dat[i + n - 1] = a[i];
-        for (int i = n - 2; i >= 0; i--) {
-            dat[i] = op(dat[i * 2 + 1], dat[i * 2 + 2]);
-        }
-    }
-
-    // [l,r)に対して遅延していた評価を実行
-    void eval(int id, int l, int r) {
-        if (flag[id]) {
-            dat[id] = lazy[id];
-            if (r - l > 1) {
-                lazy[id * 2 + 1] = lazy[id * 2 + 2] = lazy[id];
-                flag[id * 2 + 1] = flag[id * 2 + 2] = true;
-            }
-            flag[id] = false;
-        }
-    }
-
-    // [a,b)の値を全てxに変更
-    void update(int a, int b, int x, int id = 0, int l = 0, int r = -1) {
-        if (r < 0) r = n;
-        eval(id, l, r);
-        if (b <= l || r <= a) return;
-        if (a <= l && r <= b) {
-            lazy[id] = x;
-            flag[id] = true;
-            eval(id, l, r);
-        } else {
-            update(a, b, x, id * 2 + 1, l, (l + r) / 2);
-            update(a, b, x, id * 2 + 2, (l + r) / 2, r);
-            dat[id] = op(dat[id * 2 + 1], dat[id * 2 + 2]);
-        }
-    }
-
-    T query(int a, int b, int id = 0, int l = 0, int r = -1) {
-        if (r < 0) r = n;
-        eval(id, l, r);
-        if (b <= l || r <= a) return iv;
-        if (a <= l && r <= b) return dat[id];
-        T vl = query(a, b, id * 2 + 1, l, (l + r) / 2);
-        T vr = query(a, b, id * 2 + 2, (l + r) / 2, r);
-        return op(vl, vr);
-    }
-};
-
-int op(int a, int b) { return max(a, b); }
-
 int main() {
-    int w, n; cin >> w >> n;
-    vector<int> ini(w + 1);
-    LazySegtree<int, op, 0> seg(ini);
-
+    int n; cin >> n;
+    int m = 1000;
+    vector<vector<int>> mas(m + 1, vector<int>(m + 1));
     rep(i, n) {
-        int l, r; cin >> l >> r, l--;
-        int h = seg.query(l, r) + 1;
-        cout << h << '\n';
-        seg.update(l, r, h);
+        int lx, ly, rx, ry; cin >> lx >> ly >> rx >> ry;
+        mas[lx][ly]++;
+        mas[lx][ry]--;
+        mas[rx][ly]--;
+        mas[rx][ry]++;
     }
+
+    rep(i, m + 1) rep(j, m) mas[i][j + 1] += mas[i][j];
+    rep(i, m) rep(j, m + 1) mas[i + 1][j] += mas[i][j];
+
+    vector<int> ans(n + 1);
+    rep(i, m + 1) rep(j, m + 1) ans[mas[i][j]]++;
+
+    for (int i = 1; i <= n; i++) cout << ans[i] << '\n';
 }
