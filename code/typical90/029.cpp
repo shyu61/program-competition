@@ -5,7 +5,34 @@ using namespace std;
 // 想定解
 // lazysegtree
 
-// 区間min/max x RUQ
+// 罠
+// なし。非常に典型的なusecase
+
+// ポイント
+// 区間を扱う際は座標圧縮を検討する
+
+template<typename T=int>
+struct CC {
+    bool initialized;
+    vector<T> xs;
+
+    CC(): initialized(false) {}
+    void add(T x) { xs.push_back(x); }
+    void init() {
+        sort(xs.begin(), xs.end());
+        xs.erase(unique(xs.begin(), xs.end()), xs.end());
+        initialized = true;
+    }
+    int size() {
+        if (!initialized) init();
+        return xs.size();
+    }
+    int operator()(T x) {
+        if (!initialized) init();
+        return lower_bound(xs.begin(), xs.end(), x) - xs.begin();
+    }
+};
+
 template<typename T, auto op, T iv>
 struct LazySegtree {
 private:
@@ -69,6 +96,7 @@ public:
 
 int op(int a, int b) { return max(a, b); }
 
+// lazysegtreeによる解法
 int main() {
     int w, n; cin >> w >> n;
     vector<int> ini(w + 1);
@@ -79,5 +107,45 @@ int main() {
         int h = seg.query(l, r) + 1;
         cout << h << '\n';
         seg.update(l, r, h);
+    }
+}
+
+// lazysegtree + 座標圧縮による解法
+int main() {
+    int w, n; cin >> w >> n;
+    vector<int> l(n), r(n);
+    rep(i, n) cin >> l[i] >> r[i], l[i]--;
+
+    CC cc;
+    rep(i, n) { cc.add(l[i]); cc.add(r[i]); }
+    rep(i, n) { l[i] = cc(l[i]); r[i] = cc(r[i]); }
+
+    vector<int> ini(cc.size() + 1);
+    LazySegtree<int, op, 0> seg(ini);
+
+    rep(i, n) {
+        int h = seg.query(l[i], r[i]) + 1;
+        cout << h << '\n';
+        seg.update(l[i], r[i], h);
+    }
+}
+
+// 座標圧縮による解法
+int main() {
+    int w, n; cin >> w >> n;
+    vector<int> l(n), r(n);
+    rep(i, n) cin >> l[i] >> r[i], l[i]--;
+
+    CC cc;
+    rep(i, n) { cc.add(l[i]); cc.add(r[i]); }
+    rep(i, n) { l[i] = cc(l[i]); r[i] = cc(r[i]); }
+
+    vector<int> cnt(cc.size());
+    rep(i, n) {
+        int mv = 0;
+        for (int j = l[i]; j < r[i]; j++) mv = max(mv, cnt[j]);
+        mv++;
+        for (int j = l[i]; j < r[i]; j++) cnt[j] = mv;
+        cout << mv << '\n';
     }
 }

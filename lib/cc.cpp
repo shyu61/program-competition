@@ -18,7 +18,6 @@ struct CC {
         if (!initialized) init();
         return xs.size();
     }
-
     int operator()(T x) {
         if (!initialized) init();
         return lower_bound(xs.begin(), xs.end(), x) - xs.begin();
