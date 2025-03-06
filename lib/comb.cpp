@@ -6,7 +6,7 @@ int main() {
     vector<int> a(n);
     for (int i = 0; i < n; i++) cin >> a[i];
 
-    // nCk
+    // nCk: O(k(n,k))
     {
         vector<int> xs;
         auto comb = [&](auto comb, int k, int s) -> void {
