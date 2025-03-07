@@ -6,11 +6,13 @@ const int INF = 1001001001;
 void chmin(int& a, int b) { a = min(a, b); }
 
 // 想定解
-// LCS + 貪欲
+// 編集距離のdpは知っていることが前提
+// その上でdpを高速化させる方法を問うている
+// - 本当に状態管理が必要な領域のみに限定するアプローチ(ドミノdpなどと同様)
 
 // 罠
-// 操作は3種類あるが選択すべき操作は貪欲に決定できる点
-// LCSが普通に求めたらTLEする点
+// kの制約が小さいことからkの全探索では？と思ってしまう
+// - 編集距離dpは絶対使うという前提の上に考える必要がある
 
 bool solve_slow() {
     int k; string s, t; cin >> k >> s >> t;
@@ -58,10 +60,10 @@ bool solve_fast() {
 
             if (i < n && j < m) {
                 int c = s[i] == t[j] ? 0 : 1;
-                chmin(dp[i + 1][d], dp[i][d] + c);  // replace
+                chmin(dp[i + 1][d], dp[i][d] + c);  // replace: i,j共に+1なのでdは変化しない
             }
-            if (i < n && d > 0) chmin(dp[i + 1][d - 1], dp[i][d] + 1);  // delete
-            if (d < w) chmin(dp[i][d + 1], dp[i][d] + 1);  // insert
+            if (i < n && d > 0) chmin(dp[i + 1][d - 1], dp[i][d] + 1);  // delete: iだけ進むのでdは-1
+            if (d < w) chmin(dp[i][d + 1], dp[i][d] + 1);  // insert: jだけ進むのでdは+1
         }
     }
 
