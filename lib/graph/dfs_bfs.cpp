@@ -6,7 +6,7 @@ void graph() {
     vector<vector<int>> g;
 
     vector<bool> seen(n);
-    auto dfs = [&](auto dfs, int v) {
+    auto dfs = [&](auto dfs, int v) -> void {
         seen[v] = true;
         for (auto u : g[v]) {
             if (!seen[u]) dfs(dfs, u);
@@ -43,6 +43,25 @@ void graph() {
                 dist[u] = dist[v] + 1;
             }
         }
+    };
+
+    // 全パス列挙
+    vector<int> path;
+    auto dfsa = [&](auto dfsa, int v, int t) -> void {
+        seen[v] = true;
+        path.push_back(v);
+
+        if (v == t) {
+            for (auto v : path) cout << v << ' ';
+            cout << endl;
+        } else {
+            for (auto u : g[v]) {
+                if (!seen[u]) dfsa(dfsa, u, t);
+            }
+        }
+
+        seen[v] = false;
+        path.pop_back();
     };
 }
 
