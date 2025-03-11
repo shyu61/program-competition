@@ -5,6 +5,36 @@ using namespace std;
 // | Detect      | union-find | dfs      | union-find |
 // | Reconstruct | dfs        | dfs      | union-find |
 
+int directed_cycle_reconstruct() {
+    int n, m;
+    vector<vector<int>> g(n);
+
+    vector<int> seen(n);
+    vector<int> pre(n), cyc;
+    auto dfs = [&](auto dfs, int v) -> bool {
+        seen[v] = 1;
+        for (auto u : g[v]) {
+            if (seen[u] == 2) continue;
+            if (seen[u] == 1) {
+                cyc.push_back(v);
+                int cur = v;
+                while (cur != u) {
+                    cyc.push_back(pre[cur]);
+                    cur = pre[cur];
+                }
+                return true;
+            } else {
+                pre[u] = v;
+                if (dfs(dfs, u)) return true;
+            }
+        }
+        seen[v] = 2;
+        return false;
+    };
+    dfs(dfs, 0);
+    reverse(cyc.begin(), cyc.end());
+}
+
 vector<vector<int>> G;
 vector<int> color, ht;
 

@@ -1,26 +1,31 @@
 #include <bits/stdc++.h>
 using namespace std;
+using ll = long long;
 
-int to_decimal(const vector<int>& a) {
-    int res = 0;
-    for (auto ai : a) res = (res << 1) | ai;
+// 繰り返し二乗法
+ll pow(ll x, ll n, ll mod = 1) {
+    // nを二進数で表した時、1の桁のみxの累乗をかけていく
+    ll res = 1;
+    while (n > 0) {
+        if (n & 1) res = res * x % mod;
+        x = x * x % mod;
+        n >>= 1;
+    }
     return res;
 }
 
-int string_to_int(string s) {
-    return stoi(s);
-}
-
-int char_to_int(char c) {
-    return int(c - '0');
-}
-
-string int_to_string(int i) {
-    return to_string(i);
-}
-
 int main() {
-    vector<int> a;
-    // unique
-    a.erase(unique(a.begin(), a.end()), a.end());
+    {
+        // char_to_int
+        char c;
+        int(c - '0');
+    
+        // int_to_string
+        int i;
+        to_string(i);
+    
+        // string_to_int
+        string s;
+        stoi(s);
+    }
 }
