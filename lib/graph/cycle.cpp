@@ -106,6 +106,7 @@ void functional_cycle_reconstruct() {
     int n;
     vector<int> a(n);
 
+    // 常にO(n)
     {
         vector<int> id(n, -1), cyc;
         int s = 0, d = 0;
@@ -120,6 +121,7 @@ void functional_cycle_reconstruct() {
         }
     }
 
+    // 連結成分の個数が不明の場合、最悪O(n^2)
     {
         vector<int> cyc;
         int s = 0;
