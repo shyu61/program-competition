@@ -1,11 +1,78 @@
 #include <bits/stdc++.h>
+#include <lib/union_find.cpp>
 using namespace std;
+#define rep(i, n) for (int i = 0; i < (n); i++)
+using P = pair<int, int>;
 
 // | --          | Undirected | Directed | Functional |
 // | Detect      | union-find | dfs      | union-find |
 // | Reconstruct | dfs        | dfs      | union-find |
 
-int directed_cycle_reconstruct() {
+void undirect_cycle_detect() {
+    int n, m;
+    vector<P> es(m);  // edgeでループを回すのがシンプル
+
+    UnionFind uf(n);
+    bool has = false;
+    for (auto [u, v] : es) {
+        if (uf.same(u, v)) {
+            has = true;
+            break;
+        }
+        uf.merge(u, v);
+    }
+}
+
+void directed_cycle_detection() {
+    int n, m;
+    vector<vector<int>> g(n);
+
+    vector<int> seen(n);
+    auto dfs = [&](auto dfs, int v) -> bool {
+        seen[v] = 1;
+        for (auto u : g[v]) {
+            if (seen[u] == 2) continue;
+            if (seen[u] == 1) return true;
+            if (dfs(dfs, u)) return true;
+        }
+        seen[v] = 2;
+        return false;
+    };
+    bool exist = dfs(dfs, 0);
+}
+
+void undirected_cycle_reconstruct() {
+    int n, m;
+    vector<vector<int>> g(n);
+
+    vector<int> seen(n);
+    vector<int> pre(n), cyc;
+    auto dfs = [&](auto dfs, int v) -> bool {
+        seen[v] = 1;
+        for (auto u : g[v]) {
+            if (seen[u] == 2) continue;
+            if (seen[u] == 1) {
+                // 通常の無向グラフのdfsではseenで逆流が抑制されるが、
+                // seenを行きがけと帰りがけで区別しているので明示的に書く必要がある
+                if (u == pre[v]) continue;
+                cyc.push_back(v);
+                int cur = v;
+                while (cur != u) {
+                    cyc.push_back(pre[cur]);
+                    cur = pre[cur];
+                }
+                return true;
+            } else {
+                pre[u] = v;
+                if (dfs(dfs, u)) return true;
+            }
+        }
+        seen[v] = 2;
+        return false;
+    };
+}
+
+void directed_cycle_reconstruct() {
     int n, m;
     vector<vector<int>> g(n);
 
@@ -33,79 +100,4 @@ int directed_cycle_reconstruct() {
     };
     dfs(dfs, 0);
     reverse(cyc.begin(), cyc.end());
-}
-
-vector<vector<int>> G;
-vector<int> color, ht;
-
-int dfs(int v) {
-    color[v] = 1;
-    ht.push_back(v);
-    for (auto adj : G[v]) {
-        if (color[adj] == 2) continue;
-        if (color[adj] == 1){
-            return adj;
-        }
-        int pos = dfs(adj);
-        if (pos != -1) return pos;
-    }
-    color[v] = 2;
-    ht.pop_back();
-    return -1;
-}
-
-// サイクル復元
-vector<int> reconstruct(int pos) {
-    vector<int> res;
-    bool in_cyc = false;
-    for (auto v : ht) {
-        if (v == pos) in_cyc = true;
-        if (in_cyc) res.push_back(v);
-    }
-    return res;
-}
-
-int main() {
-    int N, M; cin >> N >> M;
-    G = vector<vector<int>>(N);
-    color = vector<int>(N);
-    for (int i = 0; i < M; i++) {
-        int u, v; cin >> u >> v;
-        G[u].push_back(v);
-    }
-
-    int pos = dfs(0);
-    if (pos == -1) cout << -1 << endl;
-    else {
-        vector<int> cyc = reconstruct(pos);
-        for (auto v : cyc) cout << v << endl;
-    }
-}
-
-namespace dsu_cycle_detection {
-    #include <lib/union_find.cpp>
-
-    int main() {
-        int N, M; cin >> N >> M;
-        vector<vector<int>> G(N);
-        for (int i = 0; i < M; i++) {
-            int u, v; cin >> u >> v;
-            G[u].push_back(v);
-            G[v].push_back(u);
-        }
-
-        vector<bool> seen(N);
-        UnionFind uf(N);
-        for (int i = 0; i < N; i++) {
-            seen[i] = true;
-            for (auto v : G[i]) {
-                if (seen[v]) continue;
-                if (!uf.unite(i, v)) {
-                    cout << 1 << endl;
-                    return 0;
-                }
-                seen[v] = true;
-            }
-        }
-    }
 }
