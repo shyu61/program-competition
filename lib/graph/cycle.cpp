@@ -101,3 +101,33 @@ void directed_cycle_reconstruct() {
     dfs(dfs, 0);
     reverse(cyc.begin(), cyc.end());
 }
+
+void functional_cycle_reconstruct() {
+    int n;
+    vector<int> a(n);
+
+    {
+        vector<int> id(n, -1), cyc;
+        int s = 0, d = 0;
+        while (id[s] != -1) {
+            id[s] = d++;
+            s = a[s];
+        }
+        int len = d - id[s];
+        rep(i, len) {
+            cyc.push_back(s);
+            s = a[s];
+        }
+    }
+
+    {
+        vector<int> cyc;
+        int s = 0;
+        rep(i, n) s = a[s];
+        int cur = s;
+        do {
+            cyc.push_back(cur);
+            cur = a[cur];
+        } while (cur != s);
+    }
+}
