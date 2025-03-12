@@ -78,18 +78,19 @@ void tree() {
 }
 
 void grid() {
-    const vector<int> dx = {1,0,0,1}, dy = {0,1,-1,0};
+    const vector<int> dh = {1,0,0,1}, dw = {0,1,-1,0};
 
     int h, w;
     vector<string> mas(h);
 
+    vector<vector<bool>> seen(h, vector<bool>(w));
     auto dfs = [&](auto dfs, int i, int j) -> void {
         rep(r, 4) {
-            int nh = i + dx[r], nw = j + dy[r];
-            if (nh < 0 || nh >= h || nw < 0 || nw >= h) continue;
-            if (mas[nh][nw] != '.') continue;
-            mas[nh][nw] = 'x';
-            dfs(dfs, nh, nw);
+            int ni = i + dh[r], nj = j + dw[r];
+            if (ni < 0 || ni >= h || nj < 0 || nj >= w) continue;
+            if (mas[ni][nj] != '.' || seen[ni][nj]) continue;
+            seen[ni][nj] = true;
+            dfs(dfs, ni, nj);
         }
     };
 }
