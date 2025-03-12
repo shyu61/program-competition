@@ -107,10 +107,11 @@ void functional_cycle_reconstruct() {
     vector<int> a(n);
 
     // 常にO(n)
-    {
-        vector<int> id(n, -1), cyc;
-        int s = 0, d = 0;
-        while (id[s] != -1) {
+    vector<int> cyc;
+    auto get_cycle = [&](int s) -> int {
+        vector<int> id(n, -1);
+        int d = 0;
+        while (id[s] == -1) {
             id[s] = d++;
             s = a[s];
         }
@@ -119,17 +120,17 @@ void functional_cycle_reconstruct() {
             cyc.push_back(s);
             s = a[s];
         }
-    }
+        return cyc.size();
+    };
 
     // 連結成分の個数が不明の場合、最悪O(n^2)
-    {
-        vector<int> cyc;
-        int s = 0;
+    auto get_cycle2 = [&](int s) -> int {
         rep(i, n) s = a[s];
         int cur = s;
         do {
             cyc.push_back(cur);
             cur = a[cur];
         } while (cur != s);
-    }
+        return cyc.size();
+    };
 }
