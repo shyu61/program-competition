@@ -3,6 +3,19 @@ using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 using ll = long long;
 
+// 想定解
+// 閉路のみのfunctionalグラフに気付くこと
+// ダブリング + 周期性 + 繰り返し二乗法
+
+// 罠
+// 同一配列内遷移よりfunctionalグラフであることは自明だが、順列なので木部分が存在しない点
+// ダブリングだけじゃTLEする点 → 周期性使ってね
+
+// ポイント
+// 同一配列内遷移はfunctionalグラフ
+// → 順列は木部分がない
+// 二重遷移の形状はダブリング
+
 ll pow(ll x, ll n, ll mod = 1) {
     ll res = 1;
     while (n > 0) {
