@@ -12,7 +12,8 @@ bool is_prime(int n) {
 // 素数列挙: O(nloglogn)
 struct Sieve {
     int n;
-    vector<int> is_pn, pn;
+    vector<bool> is_pn;
+    vector<int> pn;
     Sieve(int n) : n(n), is_pn(n + 1, true) {
         is_pn[0] = is_pn[1] = false;
         for (int i = 2; i <= n; i++) {
