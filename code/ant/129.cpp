@@ -1,47 +1,46 @@
 // Grundy数(コインのゲーム2): p281
 #include <bits/stdc++.h>
 using namespace std;
-using ll = long long;
+#define rep(i, n) for (int i = 0; i < (n); i++)
 
-// grundy数の性質
-// 各サブゲームの状態を数値化したもので、g(G)=0は負け確の状態を表す
-// Nimにおける各山の石の個数と等価で、各サブゲームのgrundy数のXORを取ることでゲームの勝敗を知ることができる
-
-// grundy数の本質
-// 各サブゲームにおいて、最後の手番をどちらが取れるかを偶奇性を使って表現したもの
-// XORは数理的な対称性を表現するもので、つまりは偶数性を表現している。ある1つのサブゲームが負け確(g(G)=0: つまり遷移先G'でg(G')=0がないので、自分の手番で終わらせることができない)でも全体として勝ち確になることはあって、
-// それは全体として最後の手番をどちらが取れるかは全てのサブゲームの偶奇性の組み合わせによって決定するから。
-// grundy数はNim値を抽象化していて、Nimのように任意の個数が取れない制約があるゲームでも、mexにより偶奇性が表現できる構造になっている
-// 故に以下のようなケースもNimに帰着させることができる(+XORの結合則, 交換則を利用)
-// - 操作に制約がある
-// - サブゲーム数が動的
+// grundy数とは
+// - nimの石の個数を抽象化した指標
+// - 操作に制限がある, サブゲーム数が動的などのゲームをnimに帰着するためのもの
+// - 次の一手でいける状態のgrundy数のmex(含まれない最小非負整数)
+// - grundy数の定義自体はゲーム全体で共通(サブゲームによって違わない)
+// - grundy=x: 次の一手で状態0,1,...,x-1の任意の状態に行ける
+// - grundy=0: 負け確, grundy≠0: 勝ち確
+//   - 定義より、grundy=0とは次の一手で状態0に行けない, grundy≠0とは次の一手で状態0に行ける
+//   - これらサブゲームの勝敗の組合せで全体勝敗が決定するため、XORで表現する
 
 int main() {
     int n, k; cin >> n >> k;
-    vector<int> A(k), X(n);
-    for (int i = 0; i < n; i++) cin >> A[i];
-    for (int i = 0; i < n; i++) cin >> X[i];
+    vector<int> a(k), x(n);
+    rep(i, k) cin >> a[i];
+    rep(i, n) cin >> x[i];
 
+    int mx = 0;
+    rep(i, n) mx = max(mx, x[i]);
+
+    // 一つの山に注目してgrundy数を計算
+    // grundy[i] := その山に石がi個あるときのgrundy数
     vector<int> grundy(n + 1);
-    // 0で自分に回ってきたら負け
-    grundy[0] = 0;
-
-    // grundy数を計算
-    int maxx = *max_element(X.begin(), X.end());
-    for (int i = 1; i <= maxx; i++) {
-        set<int> s;
-        for (int j = 0; j < k; j++) {
-            if (A[j] <= i) s.insert(grundy[i - A[j]]);
+    for (int i = 1; i <= mx; i++) {
+        set<int> st;  // grundy[i]から次の一手でいける状態のgrundy数
+        rep(j, k) {  // 選ぶaを全探索
+            if (a[j] <= i) st.insert(grundy[i - a[j]]);
         }
 
+        // stに含まれない最小の非負整数を探索
         int g = 0;
-        while (s.count(g) != 0) g++;
+        while (st.contains(g)) g++;
         grundy[i] = g;
     }
 
-    // 勝敗を判定
-    int x = 0;
-    for (int i = 0; i < n; i++) x ^= grundy[X[i]];
+    // 全ての山のgrundy数のXORをとる
+    int res = 0;
+    rep(i, n) res ^= grundy[x[i]];
 
-    cout << (x != 0 ? "Alice" : "Bob") << endl;
+    if (res) cout << "Bob" << endl;
+    else cout << "Alice" << endl;
 }
