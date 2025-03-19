@@ -2,18 +2,19 @@
 // 部分和問題: p34
 #include <bits/stdc++.h>
 using namespace std;
+#define rep(i, n) for (int i = 0; i < (n); i++)
 
 int main() {
     int n, k; cin >> n >> k;
     vector<int> a(n);
-    for (int i = 0; i < n; i++) cin >> a[i];
+    rep(i, n) cin >> a[i];
 
     // 全てのパターンを列挙
-    for (int bit = 0; bit < (1 << n); bit++) {
+    int n2 = 1 << n;
+    rep(s, n2) {
         int sum = 0;
-        // 列挙されたパターンの内、1が立っている場所だけ加算
-        for (int i = 0; i < n; i++) {
-            if (bit & (1 << i)) sum += a[i];
+        rep(i, n) {
+            if (s >> i & 1) sum += a[i];
         }
         if (sum == k) {
             cout << 1 << endl;
