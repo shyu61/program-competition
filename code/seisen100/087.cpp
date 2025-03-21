@@ -4,6 +4,10 @@ using namespace std;
 using ll = long long;
 using P = pair<int, int>;
 
+// ポイント
+// - 連結を分離させていく操作は、時間を逆に見て連結させていく操作で考える
+// - UnionFindに情報を持たせたい場合は、leader番号をindexに持つ配列を用意する
+
 struct UnionFind {
     int _n;
     vector<int> parents;
@@ -67,13 +71,8 @@ int main() {
         auto [u, v] = edges[i + 1];
         ll res = ans[i + 1];
         if (!uf.same(u, v)) {
-            ll us = uf.size(u), vs = uf.size(v);
-            res += us * (us - 1) / 2;
-            res += vs * (vs - 1) / 2;
-
+            res -= ll(uf.size(u)) * uf.size(v);
             uf.merge(u, v);
-            ll uvs = uf.size(u);
-            res -= uvs * (uvs - 1) / 2;
         }
         ans[i] = res;
     }
