@@ -7,6 +7,10 @@ int main() {
     vector<int> v(n), w(n);
     rep(i, n) cin >> v[i] >> w[i];
 
+    // dp[i番目まで見た時][重さw] := 最大価値
+    // i: 漸化式部分
+    // w: 決定変数
+    // 最大価値: 目的変数
     vector<int> dp(W + 1);
     rep(i, n) {
         vector<int> old(W + 1);
