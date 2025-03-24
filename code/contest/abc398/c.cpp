@@ -10,19 +10,13 @@ int main() {
     map<int, int> cnt;
     rep(i, n) cnt[a[i]]++;
 
-    int ans = -1;
-    for (auto [k, v] : cnt) {
-        if (v >= 2) continue;
-        ans = max(ans, k);
-    }
-    if (ans == -1) {
-        cout << ans << endl;
-        return 0;
-    }
+    int ans = -1, mv = -1;
     rep(i, n) {
-        if (a[i] == ans) {
-            cout << i + 1 << endl;
-            return 0;
+        if (cnt[a[i]] >= 2) continue;
+        if (a[i] > mv) {
+            mv = a[i];
+            ans = i + 1;
         }
     }
+    cout << ans << endl;
 }

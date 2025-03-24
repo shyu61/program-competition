@@ -10,11 +10,7 @@ int main() {
     vector<int> cnt(14);
     rep(i, n) cnt[a[i]]++;
 
-    int sum1 = 0, sum2 = 0;
-    rep(i, 14) {
-        if (cnt[i] >= 2) sum1++;
-        if (cnt[i] >= 3) sum2++;
-    }
-    if (sum1 >= 2 && sum2 >= 1) cout << "Yes" << endl;
+    sort(cnt.rbegin(), cnt.rend());
+    if (cnt[0] >= 3 && cnt[1] >= 2) cout << "Yes" << endl;
     else cout << "No" << endl;
 }
