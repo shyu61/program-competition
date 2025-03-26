@@ -10,7 +10,7 @@ using namespace std;
 // ポイント
 // prefix,suffix制約はお互い逆を考えることができ、問題をシンプルにできる可能性がある
 // 文字列操作系アルゴリズムは確認しておく
-// - kmp, manacher, z-algorithm, lcp系
+// - kmp, manacher, z-algorithm, lcp, sa, rolling-hash, trie
 
 vector<int> z_algorithm(const string &s) {
     vector<int> a(s.size());
