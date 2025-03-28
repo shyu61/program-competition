@@ -234,6 +234,16 @@
 - 回文
   - 中央から伸長していく戦略もある
   - https://blog.hamayanhamayan.com/entry/2017/03/25/005452
+- 文字列操作系アルゴリズム
+  - manacher: 各文字を中心とする回文半径を求める(O(N))
+  - z-algorithm:
+    - sとs[i:|s|-1]の最長共通prefixを求める(O(N))
+    - 反転文字を先頭に連結した文字列を考えることで、suffix回文に応用できる
+  - rolling-hash
+  - kmp
+  - trie
+  - suffix-array
+  - lcp
 
 ## グラフ理論
 - 連結成分問題
