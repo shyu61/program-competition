@@ -18,6 +18,7 @@ struct CC {
         if (!initialized) init();
         return xs.size();
     }
+    // 元の配列に対して圧縮した値を取得したい: c(a[i])
     int operator()(T x) {
         if (!initialized) init();
         return lower_bound(xs.begin(), xs.end(), x) - xs.begin();

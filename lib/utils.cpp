@@ -1,5 +1,7 @@
 #include <bits/stdc++.h>
+#include <lib/cc.cpp>
 using namespace std;
+#define rep(i, n) for (int i = 0; i < (n); i++)
 using ll = long long;
 
 // 繰り返し二乗法
@@ -27,5 +29,39 @@ int main() {
         // string_to_int
         string s;
         stoi(s);
+    }
+}
+
+// next配列
+int main() {
+    int n;
+    vector<int> a(n);
+    int VMAX;
+
+    vector<int> nx(n);
+    {
+        vector<int> pos(VMAX + 1, -1);
+        for (int i = n - 1; i >= 0; i--) {
+            nx[i] = pos[a[i]];
+            pos[a[i]] = i;
+        }
+    }
+}
+
+// 圧縮したnext配列
+int main() {
+    int n;
+    vector<int> a(n);
+
+    CC c;
+    rep(i, n) c.add(a[i]);
+
+    vector<int> nx(n);
+    {
+        vector<int> pos(c.size() + 1, -1);
+        for (int i = n - 1; i >= 0; i--) {
+            nx[i] = pos[c(a[i])];
+            pos[c(a[i])] = i;
+        }
     }
 }
