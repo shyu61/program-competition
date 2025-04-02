@@ -2,6 +2,13 @@
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 
+// ポイント
+// 列(文字列,数列)の要素変換をグラフ(functionalグラフ)と捉えること
+// functionalグラフの各種操作は慣れておく
+// - 枝なし(順列グラフ),枝あり,擬似functionalグラフ(出次数が1以下)...
+
+// 細かい場合分けが要求される問題に見えるが、functionalグラフと捉えれば、必要な場合分けはセオリー通り
+
 struct UnionFind {
     int _n;
     vector<int> parents;
