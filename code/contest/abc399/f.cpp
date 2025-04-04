@@ -4,6 +4,8 @@ using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 using mint = atcoder::modint998244353;
 
+// 二重ループ, 全ペア走査
+
 struct ModInv {
     int n; vector<mint> d;
     ModInv() : n(2), d({0, 1}) {}
