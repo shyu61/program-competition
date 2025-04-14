@@ -6,5 +6,6 @@ using ll = long long;
 using P = pair<int, int>;
 using mint = atcoder::modint998244353;
 const int INF = 1001001001;
+const ll INF = 1000000000000000000LL;  // 1e18
 
 int main() {}
