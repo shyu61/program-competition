@@ -5,6 +5,9 @@ using ll = long long;
 using P = pair<ll, ll>;
 
 // 関連問題: https://atcoder.jp/contests/abc189/tasks/abc189_e
+// 一般的なアフィン変換を用いる解法
+
+// アフィン変換: https://www.momoyama-usagi.com/entry/info-img05
 
 struct AF {
     vector<vector<ll>> A;
