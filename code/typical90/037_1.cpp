@@ -11,6 +11,7 @@ using P = pair<ll, int>;
 
 // 🔷抑えるべき抽象論は？
 // 区間のmin/maxはsegtreeがセオリーだが、区間幅が固定ならスライドmin/maxが最速
+// 区間ではなく動的配列のmin/maxはset/multiset
 
 template<auto op, ll iv>
 struct Segtree {
