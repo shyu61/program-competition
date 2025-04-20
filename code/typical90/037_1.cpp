@@ -2,11 +2,15 @@
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 using ll = long long;
+using P = pair<ll, int>;
 
 // 🔷初見でどうやったら解けるか
 // 組合せ最適化で、過去に選んだものに依存して次の選択肢が決定される形状なのでdpを基本路線とする
 // 通常の01ナップサックdpとの違いは、選べる重さに幅があること。つまりmaxをri-li通りに対して取る必要がある点。
 // これさえ高速に求まれば01ナップサックに帰着できる。区間maxなのでsegtreeをすれば良い
+
+// 🔷抑えるべき抽象論は？
+// 区間のmin/maxはsegtreeがセオリーだが、区間幅が固定ならスライドmin/maxが最速
 
 template<auto op, ll iv>
 struct Segtree {
@@ -51,6 +55,7 @@ public:
 
 ll op(ll a, ll b) { return max(a, b); }
 
+// segtreeによる解法
 int main() {
     int w, n; cin >> w >> n;
     vector<int> l(n), r(n), v(n);
@@ -71,6 +76,39 @@ int main() {
             }
             dp[i + 1][j] = res;
             seg[i + 1].update(j, res);
+        }
+    }
+
+    if (dp[n][w] == 0) cout << -1 << endl;
+    else cout << dp[n][w] << endl;
+}
+
+// スライド最大化による解法
+int main() {
+    int w, n; cin >> w >> n;
+    vector<int> l(n), r(n), v(n);
+    rep(i, n) cin >> l[i] >> r[i] >> v[i];
+
+    vector<vector<ll>> dp(n + 1, vector<ll>(w + 1));
+
+    rep(i, n) {
+        deque<P> deq;
+        rep(j, w + 1) {
+            if (j - l[i] >= 0) {
+                int ub = j - l[i];
+                while (deq.size() && deq.back().first <= dp[i][ub]) deq.pop_back();
+                deq.emplace_back(dp[i][ub], ub);
+            }
+
+            ll res = dp[i][j];
+            if (deq.size()) {
+                auto [mx, ix] = deq.front();
+                if (mx != 0 || j - r[i] <= 0) {
+                    res = max(res, mx + v[i]);
+                }
+                if (ix <= j - r[i]) deq.pop_front();
+            }
+            dp[i + 1][j] = res;
         }
     }
 
