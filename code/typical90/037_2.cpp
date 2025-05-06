@@ -5,6 +5,8 @@ using ll = long long;
 using P = pair<int, int>;
 const int INF = 1001001001;
 
+// 関連問題: https://atcoder.jp/contests/abc170/tasks/abc170_e
+
 // 🔷初見でどうやったら解けるか
 // クエリ問題なので各クエリ操作のボトルネックをまず特定する。
 // (1)幼児の移動,(2)2つの幼稚園のmaxの更新,(3)全体のminの更新の3操作をO(logn)程度でできれば良いことがわかる。

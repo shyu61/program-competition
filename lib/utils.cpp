@@ -21,6 +21,10 @@ int main() {
         // char_to_int
         char c;
         int(c - '0');
+
+        // int_to_char
+        int c;
+        char(c + '0');
     
         // int_to_string
         int i;
