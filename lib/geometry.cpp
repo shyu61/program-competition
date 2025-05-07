@@ -8,11 +8,6 @@ struct Point {
     Point() {}
     Point(double x, double y) : x(x), y(y) {}
 
-    bool operator<(const Point& other) const {
-        if (x == other.x) return y < other.y;
-        return x < other.x;
-    }
-
     Point operator+(Point p) { return Point(x + p.x, y + p.y); }
     Point operator-(Point p) { return Point(x - p.x, y - p.y); }
     Point operator*(double k) { return Point(k * x, k * y); }
@@ -23,6 +18,13 @@ struct Point {
 
     double dot(Point a) { return x * a.x + y * a.y; }
     double cross(Point a) { return x * a.y - y * a.x; }
+
+    Point rotate(double theta) {
+        Point res;
+        res.x = x * cos(theta) - y * sin(theta);
+        res.y = x * sin(theta) + y * cos(theta);
+        return res;
+    }
 };
 
 struct Segment {
