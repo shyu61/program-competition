@@ -28,8 +28,6 @@ int main() {
     Point c((p0.x + p2n.x) / 2, double(p0.y + p2n.y) / 2);
 
     Point ans = p0;
-    ans = ans - c;
-    ans = ans.rotate(2 * M_PI / n);
-    ans = ans + c;
+    ans = (ans - c).rotate(2 * M_PI / n) + c;
     cout << fixed << setprecision(10) << ans.x << ' ' << ans.y << endl;
 }
