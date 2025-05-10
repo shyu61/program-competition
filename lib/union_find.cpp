@@ -6,17 +6,9 @@ struct UnionFind {
     vector<int> parents;
     UnionFind(int n) : _n(n), parents(n, -1) {}
 
-    void init(int n) {
-        parents.assign(n, -1);
-    }
-
-    int leader(int x) {
-        return parents[x] < 0 ? x : parents[x] = leader(parents[x]);
-    }
-
-    bool same(int x, int y) {
-        return leader(x) == leader(y);
-    }
+    void init(int n) { parents.assign(n, -1); }
+    int leader(int x) { return parents[x] < 0 ? x : parents[x] = leader(parents[x]); }
+    bool same(int x, int y) { return leader(x) == leader(y); }
 
     int merge(int x, int y) {
         x = leader(x), y = leader(y);
@@ -27,9 +19,7 @@ struct UnionFind {
         return x;
     }
 
-    int size(int x) {
-        return -parents[leader(x)];
-    }
+    int size(int x) { return -parents[leader(x)]; }
 
     vector<vector<int>> groups() {
         vector<int> lds(_n);
