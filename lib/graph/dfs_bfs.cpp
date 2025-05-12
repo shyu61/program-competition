@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
+using P = pair<int, int>;
 
 void graph() {
     int n;
@@ -68,13 +69,27 @@ void graph() {
 void tree() {
     vector<vector<int>> g;
 
-    auto dfs = [&](auto dfs, int v, int p) -> void {
+    auto dfs = [&](auto dfs, int v, int p = -1) -> void {
         for (auto u : g[v]) {
             if (u == p) continue;
             dfs(dfs, u, v);
         }
     };
-    dfs(dfs, 0, -1);
+    dfs(dfs, 0);
+
+    int n;
+    vector<int> dist(n);
+    auto dfs_dist = [&](auto dfs_dist, int v, int p = -1, int dep = 0) -> P {
+        dist[v] = dep;
+        P res(dep, v);
+        for (auto u : g[v]) {
+            if (u == p) continue;
+            res = max(res, dfs_dist(dfs_dist, u, v, dep + 1));
+        }
+        return res;
+    };
+    auto [_, a] = dfs_dist(dfs_dist, 0);
+    auto [diameter, b] = dfs_dist(dfs_dist, a);
 }
 
 void grid() {
