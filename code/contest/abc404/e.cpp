@@ -2,45 +2,33 @@
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 using ll = long long;
-using P = pair<int, int>;
 
-// TODO
+// 🔷初見でどうやったら解けるか
+// 組合せ最適化問題なのでまず貪欲法を検討する。
+// 明らかにdagなのでdpでも解けるが、結果を累積的にする必要がないので純粋な貪欲法で十分
 
 int main() {
     int n; cin >> n;
-    vector<int> c(n - 1);
-    vector<bool> a(n - 1);
-    rep(i, n - 1) cin >> c[i];
-    rep(i, n - 1) {
-        int x; cin >> x;
-        if (x > 0) a[i] = true;
+    vector<int> c(n);
+    for (int i = 1; i < n; i++) cin >> c[i];
+    vector<bool> a(n);
+    for (int i = 1; i < n; i++) {
+        bool x; cin >> x;
+        a[i] = x;
     }
 
     int ans = 0;
-    for (int i = n - 2; i >= 0; i--) {
+    for (int i = n - 1; i > 0; i--) {
         if (!a[i]) continue;
-
-        int mv = 0, mi = 0;
-        int exist = -1;
-        for (int j = i - 1; j >= max(0, i - c[i]); j--) {
-            if (a[j]) exist = j;
-            int d = i - j + c[j];
-            if (d >= mv) {
-                mv = d;
+        int mv = n, mi = 0;
+        for (int j = i - 1; j >= i - c[i]; j--) {
+            if (a[j]) break;
+            if (j - c[j] <= mv) {
+                mv = j - c[j];
                 mi = j;
             }
+            if (j == i - c[i]) a[mi] = true;
         }
-        for (int j = i + 1; j >= min(n - 1, i + c[i]); j++) {
-            if (a[j]) exist = j;
-            int d = j - i + c[j];
-            if (d >= mv) {
-                mv = d;
-                mi = j;
-            }
-        }
-
-        if (exist == -1) a[mi] = true;
-        a[i] = false;
         ans++;
     }
 
