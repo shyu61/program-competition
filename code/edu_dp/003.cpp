@@ -16,13 +16,17 @@ int main() {
     rep(i, n) rep(j, 3) cin >> a[j][i];
 
     // dp[i][j] := i日目までで、前日にjを選んだ時の最大幸福度
-    vector<vector<int>> dp(n + 1, vector<int>(3));
-    rep(i, n) rep(j, 3) rep(k, 3) {
-        if (k == j) continue;
-        dp[i + 1][j] = max(dp[i + 1][j], dp[i][k] + a[j][i]);
+    vector<int> dp(3);
+    rep(i, n) {
+        vector<int> old(3);
+        swap(dp, old);
+        rep(j, 3) rep(k, 3) {
+            if (k == j) continue;
+            dp[j] = max(dp[j], old[k] + a[i][j]);
+        }
     }
 
     int ans = 0;
-    rep(i, 3) ans = max(ans, dp[n][i]);
+    rep(i, 3) ans = max(ans, dp[i]);
     cout << ans << endl;
 }
