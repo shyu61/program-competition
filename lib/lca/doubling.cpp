@@ -7,11 +7,10 @@ int main() {
     int n;
     vector<vector<int>> g(n);
 
-    // 前処理
     const int LOG = 17;
     vector<int> depth(n);
     vector<vector<int>> parent(LOG, vector<int>(n));  // parent[i][j]:=jから親を2^i辿った先の頂点
-    auto dfs = [&](auto dfs, int v, int p, int d) -> void {
+    auto dfs = [&](auto dfs, int v, int p = -1, int d = 0) -> void {
         parent[0][v] = p;
         depth[v] = d;
         for (auto to : g[v]) {
@@ -19,7 +18,7 @@ int main() {
             dfs(dfs, to, v, d + 1);
         }
     };
-    dfs(dfs, 0, -1, 0);
+    dfs(dfs, 0);
     rep(i, LOG - 1) {
         rep(j, n) {
             if (parent[i][j] < 0) parent[i + 1][j] = -1;
@@ -29,25 +28,19 @@ int main() {
 
     auto lca = [&](int u, int v) -> int {
         if (depth[u] > depth[v]) swap(u,v);
+        // 深さを揃える
         rep(i, LOG) {
-            // depth[v]-depth[u] だけ上るには、これを2進数で表した時に1が立っている桁の時にparentを辿れば良い
-            if (depth[v] - depth[u] >> i & 1) {
-                v = parent[i][v];
-            }
+            if (depth[v] - depth[u] >> i & 1) v = parent[i][v];
         }
         if (u == v) return u;
 
-        // 二分探索
-        // parentが一致する限りdoublingで減らして行き、一致しない時は親に登って再度doublingで減らす
+        // lcaより親の頂点はu,vで全て一致することを利用する
         for (int i = LOG - 1; i >= 0; i--) {
-            // lca以上は必ず一致するので、一致しない時点でlbを更新する
-            // 減らし過ぎたら親に戻って、次ループへ(次ループは移動幅が1/2になる)
             if (parent[i][u] != parent[i][v]) {
                 u = parent[i][u];
                 v = parent[i][v];
             }
         }
-        // u,vは条件を満たさない最大値になるので、その親が答えになる
         return parent[0][u];
     };
 }

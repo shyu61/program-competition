@@ -8,7 +8,7 @@ int main() {
 
     // 前処理
     vector<int> parent(n), depth(n);
-    auto dfs = [&](auto dfs, int v, int p, int d) -> void {
+    auto dfs = [&](auto dfs, int v, int p = -1, int d = 0) -> void {
         parent[v] = p;
         depth[v] = d;
         for (auto to : g[v]) {
@@ -16,7 +16,7 @@ int main() {
             dfs(dfs, to, v, d + 1);
         }
     };
-    dfs(dfs, 0, -1, 0);
+    dfs(dfs, 0);
 
     auto lca = [&](int u, int v) -> int {
         // 深さを揃える
