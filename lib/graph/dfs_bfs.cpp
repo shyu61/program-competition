@@ -1,6 +1,44 @@
 #include <bits/stdc++.h>
 using namespace std;
+#define rep(i, n) for (int i = 0; i < (n); i++)
 using P = pair<int, int>;
+
+// 上下左右
+const vector<int> dx = {1,-1,0,0,}, dy = {0,0,1,-1};
+
+// grid
+int main() {
+    int h, w;
+    vector<string> mas(h);
+    auto bfs = [&](const vector<P>& vs) {
+        queue<P> que;
+        vector<vector<int>> dist(h, vector<int>(w, -1));
+        // 多始点bfsにも対応
+        for (auto v : vs) que.emplace(v);
+
+        while (!que.empty()) {
+            auto [i, j] = que.front(); que.pop();
+            rep(r, 4) {
+                int ni = i + dx[r], nj = j + dy[r];
+                if (ni < 0 || ni >= h || nj < 0 || nj >= w) continue;
+                if (mas[ni][nj] != '.' || dist[ni][nj] != -1) continue;
+                que.emplace(ni, nj);
+                dist[ni][nj] = dist[i][j] + 1;
+            }
+        }
+    };
+
+    vector<vector<bool>> seen(h, vector<bool>(w));
+    auto dfs = [&](auto dfs, int v) -> int {
+        rep(r, 4) {
+            int ni = i + dx[r], nj = j + dy[r];
+            if (ni < 0 || ni >= h || nj < 0 || nj >= w) continue;
+            if (mas[ni][nj] != '.' || seen[ni][nj]) continue;
+            seen[ni][nj] = true;
+            dfs(dfs, ni, nj);
+        }
+    };
+}
 
 void graph() {
     int n;
@@ -90,22 +128,4 @@ void tree() {
     };
     auto [_, a] = dfs_dist(dfs_dist, 0);
     auto [diameter, b] = dfs_dist(dfs_dist, a);
-}
-
-void grid() {
-    const vector<int> dh = {1,0,0,1}, dw = {0,1,-1,0};
-
-    int h, w;
-    vector<string> mas(h);
-
-    vector<vector<bool>> seen(h, vector<bool>(w));
-    auto dfs = [&](auto dfs, int i, int j) -> void {
-        rep(r, 4) {
-            int ni = i + dh[r], nj = j + dw[r];
-            if (ni < 0 || ni >= h || nj < 0 || nj >= w) continue;
-            if (mas[ni][nj] != '.' || seen[ni][nj]) continue;
-            seen[ni][nj] = true;
-            dfs(dfs, ni, nj);
-        }
-    };
 }
