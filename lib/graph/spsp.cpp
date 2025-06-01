@@ -22,17 +22,17 @@ int main() {
     int n, m;
     vector<vector<P>> g;
 
-    vector<int> d(n, INF);
+    vector<int> dist(n, INF);
     auto dijkstra = [&](int s) -> void {
         priority_queue<P, vector<P>, greater<P>> pq;
         pq.emplace(0, s);
-        d[s] = 0;
+        dist[s] = 0;
         while (!pq.empty()) {
-            auto [c, v] = pq.top(); pq.pop();
-            if (c > d[v]) continue;
-            for (auto [to, nc] : g[v]) {
-                int nd = d[v] + nc;
-                if (nd < d[to]) pq.emplace(d[to] = nd, to);
+            auto [d, v] = pq.top(); pq.pop();
+            if (d > dist[v]) continue;
+            for (auto [to, c] : g[v]) {
+                int nd = dist[v] + c;
+                if (nd < dist[to]) pq.emplace(dist[to] = nd, to);
             }
         }
     };
@@ -42,8 +42,8 @@ int main() {
             bool update = false;
             rep(i, n) {
                 for (auto [to, c] : g[i]) {
-                    if (d[i] != INF && d[i] + c < d[to]) {
-                        d[to] = d[i] + c;
+                    if (dist[i] != INF && dist[i] + c < dist[to]) {
+                        dist[to] = dist[i] + c;
                         update = true;
                     }
                 }

@@ -2,6 +2,7 @@
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 using P = pair<int, int>;
+const int INF = 1001001001;
 
 // 上下左右
 const vector<int> dx = {1,-1,0,0,}, dy = {0,0,1,-1};
@@ -14,7 +15,10 @@ int main() {
         queue<P> que;
         vector<vector<int>> dist(h, vector<int>(w, -1));
         // 多始点bfsにも対応
-        for (auto v : vs) que.emplace(v);
+        for (auto [i, j] : vs) {
+            que.emplace(i, j);
+            dist[i][j] = 0;
+        }
 
         while (!que.empty()) {
             auto [i, j] = que.front(); que.pop();
@@ -80,6 +84,25 @@ void graph() {
                 if (dist[u] != -1) continue;
                 que.push(u);
                 dist[u] = dist[v] + 1;
+            }
+        }
+    };
+
+    vector<vector<P>> G;
+    auto bfs01 = [&](int v) {
+        deque<int> deq;
+        deq.push_front(v);
+        vector<int> dist(n, INF);
+        dist[v] = 0;
+
+        while (!deq.empty()) {
+            int v = deq.front(); deq.pop_front();
+            for (auto [u, w] : G[v]) {
+                if (dist[u] > dist[v] + w) {
+                    dist[u] = dist[v] + w;
+                    if (w == 0) deq.push_front(v);
+                    else deq.push_back(v);
+                }
             }
         }
     };
