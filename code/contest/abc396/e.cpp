@@ -58,6 +58,8 @@ int main() {
                 return true;
             };
 
+            // 01どちらか一方の場合だけ調べれば十分
+            // 01を変えても全て反転するだけで矛盾箇所は解消されない
             if (!dfs(dfs, i, 0)) {
                 cout << -1 << endl;
                 return 0;
