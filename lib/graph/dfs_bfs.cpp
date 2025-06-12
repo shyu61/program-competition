@@ -5,7 +5,7 @@ using P = pair<int, int>;
 const int INF = 1001001001;
 
 // 上下左右
-const vector<int> dx = {1,-1,0,0,}, dy = {0,0,1,-1};
+const vector<int> dx = {1,-1,0,0}, dy = {0,0,1,-1};
 
 // grid
 int main() {
