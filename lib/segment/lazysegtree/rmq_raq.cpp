@@ -10,7 +10,7 @@ private:
 
 public:
     LazySegtree() {}
-    LazySegtree(const vector<int>& a) {
+    LazySegtree(const vector<T>& a) {
         int sz = a.size();
         while (n < sz) n *= 2;
         dat = vector<T>(n * 2 - 1, iv);
@@ -35,7 +35,7 @@ public:
     }
 
     // [a,b)の値を全てxに変更
-    void add(int a, int b, int x, int id = 0, int l = 0, int r = -1) {
+    void add(int a, int b, T x, int id = 0, int l = 0, int r = -1) {
         if (r < 0) r = n;
         eval(id, l, r);
         if (b <= l || r <= a) return;
