@@ -2,7 +2,6 @@
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 using ll = long long;
-using P = pair<int, int>;
 
 int main() {
     int t; cin >> t;
@@ -10,31 +9,34 @@ int main() {
         int h, w; cin >> h >> w;
         vector<string> mas(h);
         rep(i, h) cin >> mas[i];
-
         if (h > w) {
-            vector<string> nmas(w);
-            rep(i, h) rep(j, w) nmas[j][i] = mas[i][j];
             swap(h, w);
+            vector<string> tmp(h, string(w, '.'));
+            rep(i, h) rep(j, w) tmp[i][j] = mas[j][i];
+            swap(mas, tmp);
         }
 
-        // 列方向に累積和をとっておく
-        vector<vector<int>> s(w, vector<int>(h + 1));
-        rep(i, w) {
-            rep(j, h) {
-                int c = mas[i][j] == '#' ? 1 : -1;
-                s[i][j + 1] = s[i][j] + c;
+        // 行方向に累積和を取る
+        vector<vector<int>> s(h, vector<int>(w));
+        rep(i, h) {
+            rep(j, w) s[i][j] = (mas[i][j] == '#' ? 1 : -1);
+            for (int j = 1; j < w; j++) s[i][j] += s[i][j - 1];
+        }
+
+        // 列方向は全探索
+        ll ans = 0;
+        vector<int> cnt(h * w * 2 + 1);
+        rep(si, h) {
+            vector<int> a(w + 1, h * w);
+            for (int ti = si; ti < h; ti++) {
+                rep(i, w) a[i + 1] += s[ti][i];
+                rep(i, w + 1) {
+                    ans += cnt[a[i]];
+                    cnt[a[i]]++;
+                }
+                rep(i, w + 1) cnt[a[i]]--;
             }
         }
-
-        // hは全探索
-        vector<int> s2(w + 1);
-        rep(i, h) rep(j, h) {
-            // hi = [i,j]について計算する
-            s2[0] = 0;
-            rep(k, w) {
-                s2[k + 1] = s2[k] + (s[k][j + 1] - s[k][i]);
-            }
-
-        }
+        cout << ans << '\n';
     }
 }
