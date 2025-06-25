@@ -1,11 +1,13 @@
 #include <bits/stdc++.h>
-#include <lib/cc.cpp>
+#include <atcoder/modint>
 using namespace std;
 #define rep(i, n) for (int i = 0; i < (n); i++)
 using ll = long long;
+using mint = atcoder::modint998244353;
 
-// 繰り返し二乗法
-ll pow(ll x, ll n, ll mod = 1) {
+// --- 繰り返し二乗法 ---
+// x^n
+ll mpow(ll x, ll n, ll mod = 1) {
     // nを二進数で表した時、1の桁のみxの累乗をかけていく
     ll res = 1;
     while (n > 0) {
@@ -16,31 +18,41 @@ ll pow(ll x, ll n, ll mod = 1) {
     return res;
 }
 
-int main() {
-    {
-        // char_to_int
-        char c;
-        int(c - '0');
-
-        // int_to_char
-        int c;
-        char(c + '0');
-    
-        // int_to_string
-        int i;
-        to_string(i);
-    
-        // string_to_int
-        string s;
-        stoi(s);
+mint mpow(mint x, ll n) {
+    mint res = 1;
+    while (n > 0) {
+        if (n & 1) res *= x;
+        x *= x;
+        n >>= 1;
     }
+    return res;
 }
 
-// next配列
+// --- 文字列操作 ---
 int main() {
-    int n;
-    vector<int> a(n);
-    int VMAX;
+    // char to int
+    char c = 'c';
+    int ci = c - '0';
+
+    // int to char
+    int ci = 10;
+    char c = ci + '0';
+
+    // string to int
+    string s = "10";
+    int si = stoi(s);
+
+    // int to string
+    int si = 10;
+    string s = to_string(si);
+}
+
+// --- next配列 ---
+// 1次元配列で次に同じ数が現れるindexを保持する配列
+int main() {
+    vector<int> a = {1,2,3,2,3,1};
+    int n = a.size();
+    int VMAX = 3;
 
     vector<int> nx(n);
     {
@@ -54,8 +66,8 @@ int main() {
 
 // 圧縮したnext配列
 int main() {
-    int n;
-    vector<int> a(n);
+    vector<int> a = {1,2,2000000000,2,2000000000,1};
+    int n = a.size();
 
     CC c;
     rep(i, n) c.add(a[i]);
