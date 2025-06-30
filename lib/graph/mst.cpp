@@ -38,7 +38,7 @@ int kruskal(int n, const vector<tuple<int, int, int>>& edges) {
     int total = 0;
     for (auto [c, u, v] : edges) {
         if (uf.same(u, v)) continue;
-        uf.unite(u, v);
+        uf.merge(u, v);
         total += c;
     }
     return total;
