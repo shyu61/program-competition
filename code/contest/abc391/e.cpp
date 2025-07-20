@@ -21,6 +21,7 @@ using uint = unsigned int;
 // d層  : 2^d
 // 子　　: 2i+1,2i+2
 // 親　　: (i-1)/2
+// 葉　　: i>=n-1
 
 // 三分木
 // 最下層: n
