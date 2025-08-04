@@ -43,7 +43,7 @@ public:
         if (a <= l && r <= b) {
             lazy[id] = (r - l) * x;
             flag[id] = true;
-            eval(id, l, r);
+            dat[id] = lazy[id];
         } else {
             update(a, b, x, id * 2 + 1, l, (l + r) / 2);
             update(a, b, x, id * 2 + 2, (l + r) / 2, r);
