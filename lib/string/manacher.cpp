@@ -4,20 +4,41 @@ using namespace std;
 
 // 文字iを中心とする最長の回文半径: O(|s|)
 // 回文の中に回文がある場合、反対側にも同じ回文が現れることを利用する
-vector<int> manacher(const string &s) {
-    vector<int> a(s.size());
-    int i = 0, j = 0;
-    while (i < s.size()) {
-        // 愚直に回文半径を求める
-        while (i - j >= 0 && i + j < s.size() && s[i - j] == s[i + j]) j++;
-        a[i] = j;
+vector<int> manacher_with_description(const string &s) {
+    int n = s.size();
+    vector<int> rad(n);
+    int i = 0, d = 0;
+    while (i < n) {
+        // iを中心として、前回から引き継いだ半径dからさらに伸ばせるか試す
+        while (d <= i && i + d < n && s[i - d] == s[i + d]) d++;
+        rad[i] = d;
+
         // iを中心とする回文内に完全に含まれる回文(k+a[i-k]<j)について、反対側に同様の半径を記録し計算を省略する
         int k = 1;
-        while (i - k >= 0 && k + a[i - k] < j) {
-            a[i + k] = a[i - k];
+        // iより左にあり、かつその半径がrad[i]に完全に含まれるものを求め、逆側にミラーリングする
+        while (k <= i && k + rad[i - k] < d) {
+            rad[i + k] = rad[i - k];
             k++;
         }
-        i += k; j -= k;
+        i += k; d -= k;
     }
-    return a;
+    return rad;
+}
+
+vector<int> manacher(const string &s) {
+    int n = s.size();
+    vector<int> rad(n);
+    int i = 0, d = 0;
+    while (i < n) {
+        while (d <= i && i + d < n && s[i - d] == s[i + d]) d++;
+        rad[i] = d;
+
+        int k = 1;
+        while (k <= i && k + rad[i - k] < d) {
+            rad[i + k] = rad[i - k];
+            k++;
+        }
+        i += k; d -= k;
+    }
+    return rad;
 }
