@@ -4,9 +4,9 @@ using namespace std;
 
 // 文字iを中心とする最長の回文半径: O(|s|)
 // 回文の中に回文がある場合、反対側にも同じ回文が現れることを利用する
-vector<int> manacher_with_description(const string &s) {
+vector<int> manacher_with_description(const string &s) {  // sは'#'などを間に入れた2倍列を想定する
     int n = s.size();
-    vector<int> rad(n);
+    vector<int> rad(n);  // 偶奇によらず rad[i]-1 がiを中心とする回文の回文長になる
     int i = 0, d = 0;
     while (i < n) {
         // iを中心として、前回から引き継いだ半径dからさらに伸ばせるか試す

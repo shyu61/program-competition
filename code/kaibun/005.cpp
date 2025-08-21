@@ -10,6 +10,24 @@ bool is_palindrome(string s) {
     return t == s;
 }
 
+vector<int> manacher(const string &s) {
+    int n = s.size();
+    vector<int> rad(n);
+    int i = 0, d = 0;
+    while (i < n) {
+        while (d <= i && i + d < n && s[i - d] == s[i + d]) d++;
+        rad[i] = d;
+
+        int k = 1;
+        while (k <= i && k + rad[i - k] < d) {
+            rad[i + k] = rad[i - k];
+            k++;
+        }
+        i += k; d -= k;
+    }
+    return rad;
+}
+
 // O(N^3)
 int main() {
     string s; cin >> s;
@@ -54,22 +72,8 @@ int main() {
         t += '#';
     }
 
-    n = t.size();
-    vector<int> rad(n);
-    int i = 0, d = 0;
-    while (i < n) {
-        while (d <= i && i + d < n && t[i - d] == t[i + d]) d++;
-        rad[i] = d;
-
-        int k = 1;
-        while (k <= i && k + rad[i - k] < d) {
-            rad[i + k] = rad[i - k];
-            k++;
-        }
-        i += k; d -= k;
-    }
-
+    auto rad = manacher(t);
     int ans = 0;
-    rep(i, n) ans = max(ans, rad[i]);
-    cout << ans - 1 << endl;
+    for (auto v : rad) ans = max(ans, v - 1);
+    cout << ans << endl;
 }
